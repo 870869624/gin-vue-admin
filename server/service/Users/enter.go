@@ -1,4 +1,3 @@
 package Users
 
-type ServiceGroup struct {
-}
+type ServiceGroup struct{ UsersService }

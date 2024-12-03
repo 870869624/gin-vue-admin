@@ -1,4 +1,3 @@
 package Information
 
-type ServiceGroup struct {
-}
+type ServiceGroup struct{ InformationService }

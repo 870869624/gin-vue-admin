@@ -1,4 +1,3 @@
 package PublicChain
 
-type ServiceGroup struct {
-}
+type ServiceGroup struct{ PublicChainService }
