@@ -10,7 +10,7 @@ autocode:
     root: /Users/a123/Documents/go-project/demo/Candies/gin-vue-admin
     server: server
     module: github.com/flipped-aurora/gin-vue-admin/server
-    ai-path: ""
+    ai-path: "https://ai.gin-vue-admin.com/{FUNC}/17364747210/72326430-b931-4335-9837-220d5421f9c7"
 aws-s3:
     bucket: xxxxx-10005608
     region: ap-shanghai
