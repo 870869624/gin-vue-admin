@@ -1,13 +1,18 @@
-
 package Users
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Users"
-    UsersReq "github.com/flipped-aurora/gin-vue-admin/server/model/Users/request"
+	UsersReq "github.com/flipped-aurora/gin-vue-admin/server/model/Users/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"gorm.io/gorm"
 )
 
-type UsersService struct {}
+type UsersService struct{}
+
 // CreateUsers 创建用户列表记录
 // Author [yourname](https://github.com/yourname)
 func (usersService *UsersService) CreateUsers(users *Users.Users) (err error) {
@@ -17,72 +22,110 @@ func (usersService *UsersService) CreateUsers(users *Users.Users) (err error) {
 
 // DeleteUsers 删除用户列表记录
 // Author [yourname](https://github.com/yourname)
-func (usersService *UsersService)DeleteUsers(ID string) (err error) {
-	err = global.GVA_DB.Delete(&Users.Users{},"id = ?",ID).Error
+func (usersService *UsersService) DeleteUsers(ID string) (err error) {
+	err = global.GVA_DB.Delete(&Users.Users{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteUsersByIds 批量删除用户列表记录
 // Author [yourname](https://github.com/yourname)
-func (usersService *UsersService)DeleteUsersByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Delete(&[]Users.Users{},"id in ?",IDs).Error
+func (usersService *UsersService) DeleteUsersByIds(IDs []string) (err error) {
+	err = global.GVA_DB.Delete(&[]Users.Users{}, "id in ?", IDs).Error
 	return err
 }
 
 // UpdateUsers 更新用户列表记录
 // Author [yourname](https://github.com/yourname)
-func (usersService *UsersService)UpdateUsers(users Users.Users) (err error) {
-	err = global.GVA_DB.Model(&Users.Users{}).Where("id = ?",users.ID).Updates(&users).Error
+func (usersService *UsersService) UpdateUsers(users Users.Users) (err error) {
+	err = global.GVA_DB.Model(&Users.Users{}).Where("id = ?", users.ID).Updates(&users).Error
 	return err
 }
 
 // GetUsers 根据ID获取用户列表记录
 // Author [yourname](https://github.com/yourname)
-func (usersService *UsersService)GetUsers(ID string) (users Users.Users, err error) {
+func (usersService *UsersService) GetUsers(ID string) (users Users.Users, err error) {
 	err = global.GVA_DB.Where("id = ?", ID).First(&users).Error
 	return
 }
 
 // GetUsersInfoList 分页获取用户列表记录
 // Author [yourname](https://github.com/yourname)
-func (usersService *UsersService)GetUsersInfoList(info UsersReq.UsersSearch) (list []Users.Users, total int64, err error) {
+func (usersService *UsersService) GetUsersInfoList(info UsersReq.UsersSearch) (list []Users.Users, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-    // 创建db
+	// 创建db
 	db := global.GVA_DB.Model(&Users.Users{})
-    var userss []Users.Users
-    // 如果有条件搜索 下方会自动创建搜索语句
-    if info.StartCreatedAt !=nil && info.EndCreatedAt !=nil {
-     db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
-    }
-    if info.Username != nil && *info.Username != "" {
-        db = db.Where("username = ?",*info.Username)
-    }
-    if info.Email != nil && *info.Email != "" {
-        db = db.Where("email = ?",*info.Email)
-    }
-    if info.PhoneNumber != nil && *info.PhoneNumber != "" {
-        db = db.Where("phone_number = ?",*info.PhoneNumber)
-    }
-    if info.Age != nil {
-        db = db.Where("age <> ?",*info.Age)
-    }
-    if info.Gender != nil && *info.Gender != "" {
-        db = db.Where("gender = ?",*info.Gender)
-    }
+	var userss []Users.Users
+	// 如果有条件搜索 下方会自动创建搜索语句
+	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
+		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	}
+	if info.Username != nil && *info.Username != "" {
+		db = db.Where("username = ?", *info.Username)
+	}
+	if info.Email != nil && *info.Email != "" {
+		db = db.Where("email = ?", *info.Email)
+	}
+	if info.PhoneNumber != nil && *info.PhoneNumber != "" {
+		db = db.Where("phone_number = ?", *info.PhoneNumber)
+	}
+	if info.Age != nil {
+		db = db.Where("age <> ?", *info.Age)
+	}
+	if info.Gender != nil && *info.Gender != "" {
+		db = db.Where("gender = ?", *info.Gender)
+	}
 	err = db.Count(&total).Error
-	if err!=nil {
-    	return
-    }
+	if err != nil {
+		return
+	}
 
 	if limit != 0 {
-       db = db.Limit(limit).Offset(offset)
-    }
+		db = db.Limit(limit).Offset(offset)
+	}
 
 	err = db.Find(&userss).Error
-	return  userss, total, err
+	return userss, total, err
 }
-func (usersService *UsersService)GetUsersPublic() {
-    // 此方法为获取数据源定义的数据
-    // 请自行实现
+func (usersService *UsersService) GetUsersPublic() {
+	// 此方法为获取数据源定义的数据
+	// 请自行实现
+}
+
+func (usersService *UsersService) Login(u *Users.Users) (userInter *Users.Users, err error) {
+	if nil == global.GVA_DB {
+		return nil, fmt.Errorf("db not init")
+	}
+	var user Users.Users
+	err = global.GVA_DB.Debug().Where("username = ?", u.Username).First(&user).Error
+	if err == nil {
+		if ok := utils.BcryptCheck(*u.Password, *user.Password); !ok {
+			return nil, errors.New("密码错误")
+		}
+	}
+	return &user, err
+}
+
+func (usersService *UsersService) Register(u *Users.Users) (userInter *Users.Users, err error) {
+	var user Users.Users
+	if !errors.Is(global.GVA_DB.Where("username = ?", u.Username).First(&user).Error, gorm.ErrRecordNotFound) { // 判断用户名是否注册
+		return userInter, errors.New("用户名已注册")
+	}
+	// 否则 附加uuid 密码hash加密 注册
+	*u.Password = utils.BcryptHash(*u.Password)
+	err = global.GVA_DB.Create(&u).Error
+	return u, err
+}
+
+func (usersService *UsersService) ChangePassword(u *Users.Users, newPassword string) (userInter *Users.Users, err error) {
+	var user Users.Users
+	if err = global.GVA_DB.Where("id = ?", u.ID).First(&user).Error; err != nil {
+		return nil, err
+	}
+	if ok := utils.BcryptCheck(*u.Password, *user.Password); !ok {
+		return nil, errors.New("原密码错误")
+	}
+	*user.Password = utils.BcryptHash(newPassword)
+	err = global.GVA_DB.Save(&user).Error
+	return &user, err
 }

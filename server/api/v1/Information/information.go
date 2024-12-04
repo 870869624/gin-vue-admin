@@ -1,18 +1,15 @@
 package Information
 
 import (
-	
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/Information"
-    InformationReq "github.com/flipped-aurora/gin-vue-admin/server/model/Information/request"
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/Information"
+	InformationReq "github.com/flipped-aurora/gin-vue-admin/server/model/Information/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
-type InformationApi struct {}
-
-
+type InformationApi struct{}
 
 // CreateInformation 创建资讯
 // @Tags Information
@@ -32,11 +29,11 @@ func (informationApi *InformationApi) CreateInformation(c *gin.Context) {
 	}
 	err = informationService.CreateInformation(&information)
 	if err != nil {
-        global.GVA_LOG.Error("创建失败!", zap.Error(err))
-		response.FailWithMessage("创建失败:" + err.Error(), c)
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		response.FailWithMessage("创建失败:"+err.Error(), c)
 		return
 	}
-    response.OkWithMessage("创建成功", c)
+	response.OkWithMessage("创建成功", c)
 }
 
 // DeleteInformation 删除资讯
@@ -52,8 +49,8 @@ func (informationApi *InformationApi) DeleteInformation(c *gin.Context) {
 	ID := c.Query("ID")
 	err := informationService.DeleteInformation(ID)
 	if err != nil {
-        global.GVA_LOG.Error("删除失败!", zap.Error(err))
-		response.FailWithMessage("删除失败:" + err.Error(), c)
+		global.GVA_LOG.Error("删除失败!", zap.Error(err))
+		response.FailWithMessage("删除失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithMessage("删除成功", c)
@@ -71,8 +68,8 @@ func (informationApi *InformationApi) DeleteInformationByIds(c *gin.Context) {
 	IDs := c.QueryArray("IDs[]")
 	err := informationService.DeleteInformationByIds(IDs)
 	if err != nil {
-        global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
-		response.FailWithMessage("批量删除失败:" + err.Error(), c)
+		global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
+		response.FailWithMessage("批量删除失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithMessage("批量删除成功", c)
@@ -96,8 +93,8 @@ func (informationApi *InformationApi) UpdateInformation(c *gin.Context) {
 	}
 	err = informationService.UpdateInformation(information)
 	if err != nil {
-        global.GVA_LOG.Error("更新失败!", zap.Error(err))
-		response.FailWithMessage("更新失败:" + err.Error(), c)
+		global.GVA_LOG.Error("更新失败!", zap.Error(err))
+		response.FailWithMessage("更新失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithMessage("更新成功", c)
@@ -116,8 +113,8 @@ func (informationApi *InformationApi) FindInformation(c *gin.Context) {
 	ID := c.Query("ID")
 	reinformation, err := informationService.GetInformation(ID)
 	if err != nil {
-        global.GVA_LOG.Error("查询失败!", zap.Error(err))
-		response.FailWithMessage("查询失败:" + err.Error(), c)
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithData(reinformation, c)
@@ -141,16 +138,16 @@ func (informationApi *InformationApi) GetInformationList(c *gin.Context) {
 	}
 	list, total, err := informationService.GetInformationInfoList(pageInfo)
 	if err != nil {
-	    global.GVA_LOG.Error("获取失败!", zap.Error(err))
-        response.FailWithMessage("获取失败:" + err.Error(), c)
-        return
-    }
-    response.OkWithDetailed(response.PageResult{
-        List:     list,
-        Total:    total,
-        Page:     pageInfo.Page,
-        PageSize: pageInfo.PageSize,
-    }, "获取成功", c)
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
+	}, "获取成功", c)
 }
 
 // GetInformationPublic 不需要鉴权的资讯接口
@@ -162,10 +159,10 @@ func (informationApi *InformationApi) GetInformationList(c *gin.Context) {
 // @Success 200 {object} response.Response{data=object,msg=string} "获取成功"
 // @Router /information/getInformationPublic [get]
 func (informationApi *InformationApi) GetInformationPublic(c *gin.Context) {
-    // 此接口不需要鉴权
-    // 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
-    informationService.GetInformationPublic()
-    response.OkWithDetailed(gin.H{
-       "info": "不需要鉴权的资讯接口信息",
-    }, "获取成功", c)
+	// 此接口不需要鉴权
+	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
+	informationService.GetInformationPublic()
+	response.OkWithDetailed(gin.H{
+		"info": "不需要鉴权的资讯接口信息",
+	}, "获取成功", c)
 }

@@ -1,13 +1,17 @@
 package utils
 
 import (
+	"fmt"
+	"net"
+	"time"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/Users"
+	usersReq "github.com/flipped-aurora/gin-vue-admin/server/model/Users/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	systemReq "github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid/v5"
-	"net"
-	"time"
 )
 
 func ClearToken(c *gin.Context) {
@@ -53,6 +57,22 @@ func GetToken(c *gin.Context) string {
 	return token
 }
 
+func MobileGetToken(c *gin.Context) string {
+	token, _ := c.Cookie("x-token")
+	fmt.Println(token, 222222)
+	if token == "" {
+		j := NewJWT()
+		token = c.Request.Header.Get("x-token")
+		claims, err := j.MobileParseToken(token)
+		if err != nil {
+			global.GVA_LOG.Error("重新写入cookie token失败,未能成功解析token,请检查请求头是否存在x-token且claims是否为规定结构")
+			return token
+		}
+		SetToken(c, token, int((claims.ExpiresAt.Unix()-time.Now().Unix())/60))
+	}
+	return token
+}
+
 func GetClaims(c *gin.Context) (*systemReq.CustomClaims, error) {
 	token := GetToken(c)
 	j := NewJWT()
@@ -60,6 +80,17 @@ func GetClaims(c *gin.Context) (*systemReq.CustomClaims, error) {
 	if err != nil {
 		global.GVA_LOG.Error("从Gin的Context中获取从jwt解析信息失败, 请检查请求头是否存在x-token且claims是否为规定结构")
 	}
+	return claims, err
+}
+
+func GetMobileClaims(c *gin.Context) (*usersReq.CustomClaims, error) {
+	token := MobileGetToken(c)
+	j := NewJWT()
+	claims, err := j.MobileParseToken(token)
+	if err != nil {
+		global.GVA_LOG.Error("从Gin的Context中获取从jwt解析信息失败, 请检查请求头是否存在x-token且claims是否为规定结构")
+	}
+	fmt.Println(claims, 333333, err.Error())
 	return claims, err
 }
 
@@ -73,6 +104,19 @@ func GetUserID(c *gin.Context) uint {
 		}
 	} else {
 		waitUse := claims.(*systemReq.CustomClaims)
+		return waitUse.BaseClaims.ID
+	}
+}
+
+func GetMobileUserID(c *gin.Context) uint {
+	if claims, exists := c.Get("claims"); !exists {
+		if cl, err := GetMobileClaims(c); err != nil {
+			return 0
+		} else {
+			return cl.BaseClaims.ID
+		}
+	} else {
+		waitUse := claims.(*usersReq.CustomClaims)
 		return waitUse.BaseClaims.ID
 	}
 }
@@ -143,6 +187,19 @@ func LoginToken(user system.Login) (token string, claims systemReq.CustomClaims,
 		AuthorityId: user.GetAuthorityId(),
 	})
 	token, err = j.CreateToken(claims)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func MobileLoginToken(user Users.Login) (token string, claims usersReq.CustomClaims, err error) {
+	j := &JWT{SigningKey: []byte(global.GVA_CONFIG.JWT.SigningKey)} // 唯一签名
+	claims = j.MobileCreateClaims(usersReq.BaseClaims{
+		ID:       user.GetUserId(),
+		Username: user.GetUsername(),
+	})
+	token, err = j.MobileCreateToken(claims)
 	if err != nil {
 		return
 	}

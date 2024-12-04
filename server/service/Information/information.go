@@ -56,7 +56,7 @@ func (informationService *InformationService)GetInformationInfoList(info Informa
      db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
     }
     if info.Title != nil && *info.Title != "" {
-        db = db.Where("title = ?",*info.Title)
+        db = db.Where("title LIKE ?","%"+*info.Title+"%")
     }
     if info.Author != nil && *info.Author != "" {
         db = db.Where("author = ?",*info.Author)

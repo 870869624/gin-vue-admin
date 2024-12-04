@@ -69,7 +69,7 @@ func (e *FileUploadAndDownloadService) GetFileRecordInfoList(info request.PageIn
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	keyword := info.Keyword
-	db := global.GVA_DB.Model(&example.ExaFileUploadAndDownload{})
+	db := global.GVA_DB.Debug().Model(&example.ExaFileUploadAndDownload{})
 	var fileLists []example.ExaFileUploadAndDownload
 	if len(keyword) > 0 {
 		db = db.Where("name LIKE ?", "%"+keyword+"%")

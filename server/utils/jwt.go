@@ -2,11 +2,13 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v4"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	usersReq "github.com/flipped-aurora/gin-vue-admin/server/model/Users/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
 )
 
@@ -78,6 +80,68 @@ func (j *JWT) ParseToken(tokenString string) (*request.CustomClaims, error) {
 	}
 	if token != nil {
 		if claims, ok := token.Claims.(*request.CustomClaims); ok && token.Valid {
+			return claims, nil
+		}
+		return nil, TokenInvalid
+
+	} else {
+		return nil, TokenInvalid
+	}
+}
+
+func (j *JWT) MobileCreateClaims(baseClaims usersReq.BaseClaims) usersReq.CustomClaims {
+	bf, _ := ParseDuration(global.GVA_CONFIG.JWT.BufferTime)
+	ep, _ := ParseDuration(global.GVA_CONFIG.JWT.ExpiresTime)
+	claims := usersReq.CustomClaims{
+		BaseClaims: baseClaims,
+		BufferTime: int64(bf / time.Second), // 缓冲时间1天 缓冲时间内会获得新的token刷新令牌 此时一个用户会存在两个有效令牌 但是前端只留一个 另一个会丢失
+		RegisteredClaims: jwt.RegisteredClaims{
+			Audience:  jwt.ClaimStrings{"GVA"},                   // 受众
+			NotBefore: jwt.NewNumericDate(time.Now().Add(-1000)), // 签名生效时间
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ep)),    // 过期时间 7天  配置文件
+			Issuer:    global.GVA_CONFIG.JWT.Issuer,              // 签名的发行者
+		},
+	}
+	return claims
+}
+
+// 创建一个token
+func (j *JWT) MobileCreateToken(claims usersReq.CustomClaims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(j.SigningKey)
+}
+
+// CreateTokenByOldToken 旧token 换新token 使用归并回源避免并发问题
+func (j *JWT) MobileCreateTokenByOldToken(oldToken string, claims usersReq.CustomClaims) (string, error) {
+	v, err, _ := global.GVA_Concurrency_Control.Do("JWT:"+oldToken, func() (interface{}, error) {
+		return j.MobileCreateToken(claims)
+	})
+	return v.(string), err
+}
+
+// 解析 token
+func (j *JWT) MobileParseToken(tokenString string) (*usersReq.CustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &usersReq.CustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
+		return j.SigningKey, nil
+	})
+	fmt.Println("token", token)
+	if err != nil {
+		if ve, ok := err.(*jwt.ValidationError); ok {
+			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+				return nil, TokenMalformed
+			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
+				// Token is expired
+				return nil, TokenExpired
+			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
+				return nil, TokenNotValidYet
+			} else {
+				return nil, TokenInvalid
+			}
+		}
+	}
+	if token != nil {
+		if claims, ok := token.Claims.(*usersReq.CustomClaims); ok && token.Valid {
+			fmt.Println("claims", claims)
 			return claims, nil
 		}
 		return nil, TokenInvalid

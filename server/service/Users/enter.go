@@ -1,3 +1,6 @@
 package Users
 
-type ServiceGroup struct{ UsersService }
+type ServiceGroup struct {
+	CasbinService
+	UsersService
+}
