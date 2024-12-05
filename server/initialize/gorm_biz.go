@@ -5,13 +5,17 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Airdrop"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Information"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/InvitationRecord"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/PlatformV1"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/Presale"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/PublicChain"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Users"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/Vote"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/VoteRecord"
 )
 
 func bizModel() error {
 	db := global.GVA_DB
-	err := db.AutoMigrate(PublicChain.PublicChain{}, Users.Users{}, InvitationRecord.InvitationRecord{}, Information.Information{}, Airdrop.Airdrop{})
+	err := db.AutoMigrate(PublicChain.PublicChain{}, Users.Users{}, InvitationRecord.InvitationRecord{}, Information.Information{}, Airdrop.Airdrop{}, PlatformV1.Platform{}, Vote.Vote{}, VoteRecord.VoteRecord{}, Presale.Presale{})
 	if err != nil {
 		return err
 	}

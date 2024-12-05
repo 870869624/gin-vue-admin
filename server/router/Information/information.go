@@ -30,6 +30,7 @@ func (s *InformationRouter) InitInformationRouter(Router *gin.RouterGroup, Publi
 	informationMobileRouter := PublicRouter.Group("infoMobile")
 	{
 		informationMobileRouter.GET("getInformationList", informationApi.GetInformationList)
+		informationMobileRouter.GET("findInformation", informationApi.FindInformation) // 根据ID获取资讯
 	}
 
 }

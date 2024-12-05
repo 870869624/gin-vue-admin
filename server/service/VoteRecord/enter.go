@@ -1,4 +1,3 @@
 package VoteRecord
 
-type ServiceGroup struct {
-}
+type ServiceGroup struct{ VoteRecordService }

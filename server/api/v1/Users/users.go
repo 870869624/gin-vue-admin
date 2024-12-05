@@ -1,7 +1,6 @@
 package Users
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -117,7 +116,6 @@ func (usersApi *UsersApi) UpdateUsers(c *gin.Context) {
 // @Success 200 {object} response.Response{data=Users.Users,msg=string} "查询成功"
 // @Router /users/findUsers [get]
 func (usersApi *UsersApi) FindUsers(c *gin.Context) {
-	fmt.Println(11111111)
 	ID := c.Query("ID")
 	reusers, err := usersService.GetUsers(ID)
 	if err != nil {

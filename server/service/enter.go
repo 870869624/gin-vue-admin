@@ -4,11 +4,14 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service/Airdrop"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/Information"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/InvitationRecord"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/PlatformV1"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/Presale"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/PublicChain"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/Users"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/Vote"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/VoteRecord"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/platform"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
 )
 
@@ -24,4 +27,7 @@ type ServiceGroup struct {
 	AirdropServiceGroup          Airdrop.ServiceGroup
 	VoteServiceGroup             Vote.ServiceGroup
 	VoteRecordServiceGroup       VoteRecord.ServiceGroup
+	PlatformServiceGroup         platform.ServiceGroup
+	PlatformV1ServiceGroup       PlatformV1.ServiceGroup
+	PresaleServiceGroup          Presale.ServiceGroup
 }

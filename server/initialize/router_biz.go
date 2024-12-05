@@ -28,9 +28,25 @@ func initBizRouter(routers ...*gin.RouterGroup) {
 	{
 		InformationRouter := router.RouterGroupApp.Information
 		InformationRouter.InitInformationRouter(privateGroup, publicGroup)
-	} // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
+	}
 	{
 		AirdropRouter := router.RouterGroupApp.Airdrop
 		AirdropRouter.InitAirdropRouter(privateGroup, publicGroup)
+	}
+	{
+		PlatformV1Router := router.RouterGroupApp.PlatformV1
+		PlatformV1Router.InitPlatformRouter(privateGroup, publicGroup)
+	}
+	{
+		VoteRouter := router.RouterGroupApp.Vote
+		VoteRouter.InitVoteRouter(privateGroup, publicGroup)
+	}
+	{
+		VoteRecordRouter := router.RouterGroupApp.VoteRecord
+		VoteRecordRouter.InitVoteRecordRouter(privateGroup, publicGroup)
+	} // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
+	{
+		PresaleRouter := router.RouterGroupApp.Presale
+		PresaleRouter.InitPresaleRouter(privateGroup, publicGroup)
 	}
 }
