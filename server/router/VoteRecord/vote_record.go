@@ -27,7 +27,9 @@ func (s *VoteRecordRouter) InitVoteRecordRouter(Router *gin.RouterGroup, PublicR
 	}
 
 	voteRecordMobileRouterWithoutAuth := PublicRouter.Group("voteRecordMobile")
+	voteRecordMobileRouterWithoutAuth.Use(middleware.MoblileJWTAuth()).Use(middleware.OperationRecord())
 	{
-		voteRecordMobileRouterWithoutAuth.GET("findVoteRecord", voteRecordApi.FindVoteRecord) // 根据ID获取投票记录
+		// voteRecordMobileRouterWithoutAuth.GET("my/number", voteRecordApi.GetVoteRecordNumber)
+		voteRecordMobileRouterWithoutAuth.GET("all/number", voteRecordApi.GetAllVoteRecordNumber)
 	}
 }

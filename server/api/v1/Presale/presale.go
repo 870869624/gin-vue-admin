@@ -171,7 +171,7 @@ func (presaleApi *PresaleApi) GetPresalePublic(c *gin.Context) {
 func (presaleApi *PresaleApi) MobileCreatePresale(c *gin.Context) {
 	var isShow = false
 	var isPass = false
-	var presale Presale.Presale
+	var presale Presale.MobilePresaleCre
 	err := c.ShouldBindJSON(&presale)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -179,11 +179,16 @@ func (presaleApi *PresaleApi) MobileCreatePresale(c *gin.Context) {
 	}
 
 	uid := utils.GetMobileUserID(c)
+	if uid == 0 {
+
+		response.FailWithMessage("查询失败:用户ID为空", c)
+		return
+	}
 	userId := int(uid)
 	presale.UserId = &userId
 	presale.PresaleIsShow = &isShow
 	presale.PresaleIsPass = &isPass
-	err = presaleService.CreatePresale(&presale)
+	err = presaleService.CreatePresaleMobile(&presale)
 	if err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败:"+err.Error(), c)
@@ -222,4 +227,25 @@ func (presaleApi *PresaleApi) MobileFindPresale(c *gin.Context) {
 		return
 	}
 	response.OkWithData(represale, c)
+}
+
+func (presaleApi *PresaleApi) GetPresaleListMobile(c *gin.Context) {
+	var pageInfo PresaleReq.PresaleSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	list, total, err := presaleService.GetPresaleInfoList(pageInfo)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
+	}, "获取成功", c)
 }

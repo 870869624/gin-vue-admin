@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"net"
 	"time"
 
@@ -58,18 +57,7 @@ func GetToken(c *gin.Context) string {
 }
 
 func MobileGetToken(c *gin.Context) string {
-	token, _ := c.Cookie("x-token")
-	fmt.Println(token, 222222)
-	if token == "" {
-		j := NewJWT()
-		token = c.Request.Header.Get("x-token")
-		claims, err := j.MobileParseToken(token)
-		if err != nil {
-			global.GVA_LOG.Error("重新写入cookie token失败,未能成功解析token,请检查请求头是否存在x-token且claims是否为规定结构")
-			return token
-		}
-		SetToken(c, token, int((claims.ExpiresAt.Unix()-time.Now().Unix())/60))
-	}
+	token := c.Request.Header.Get("x-token")
 	return token
 }
 
@@ -90,7 +78,6 @@ func GetMobileClaims(c *gin.Context) (*usersReq.CustomClaims, error) {
 	if err != nil {
 		global.GVA_LOG.Error("从Gin的Context中获取从jwt解析信息失败, 请检查请求头是否存在x-token且claims是否为规定结构")
 	}
-	fmt.Println(claims, 333333, err.Error())
 	return claims, err
 }
 
@@ -113,6 +100,12 @@ func GetMobileUserID(c *gin.Context) uint {
 		if cl, err := GetMobileClaims(c); err != nil {
 			return 0
 		} else {
+			user := &Users.Users{
+				GVA_MODEL: global.GVA_MODEL{ID: cl.BaseClaims.ID},
+			}
+			if err := user.GetUser(); err != nil {
+				return 0
+			}
 			return cl.BaseClaims.ID
 		}
 	} else {
@@ -193,7 +186,7 @@ func LoginToken(user system.Login) (token string, claims systemReq.CustomClaims,
 	return
 }
 
-func MobileLoginToken(user Users.Login) (token string, claims usersReq.CustomClaims, err error) {
+func MobileLoginToken(user Users.Users) (token string, claims usersReq.CustomClaims, err error) {
 	j := &JWT{SigningKey: []byte(global.GVA_CONFIG.JWT.SigningKey)} // 唯一签名
 	claims = j.MobileCreateClaims(usersReq.BaseClaims{
 		ID:       user.GetUserId(),

@@ -171,18 +171,22 @@ func (airdropApi *AirdropApi) GetAirdropPublic(c *gin.Context) {
 func (airdropApi *AirdropApi) MobileCreateAirdrop(c *gin.Context) {
 	var isShow = false
 	var isPass = false
-	var airdrop Airdrop.Airdrop
+	var airdrop Airdrop.MobileAirdropCre
 	err := c.ShouldBindJSON(&airdrop)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	uid := utils.GetMobileUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("查询失败:用户ID为空", c)
+		return
+	}
 	userId := int(uid)
 	airdrop.UserId = &userId
 	airdrop.AirdropIsShow = &isShow
 	airdrop.AirdropIsPass = &isPass
-	err = airdropService.CreateAirdrop(&airdrop)
+	err = airdropService.CreateAirdropMobile(&airdrop)
 	if err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败:"+err.Error(), c)

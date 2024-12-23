@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v4"
@@ -124,7 +123,6 @@ func (j *JWT) MobileParseToken(tokenString string) (*usersReq.CustomClaims, erro
 	token, err := jwt.ParseWithClaims(tokenString, &usersReq.CustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return j.SigningKey, nil
 	})
-	fmt.Println("token", token)
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
@@ -141,7 +139,6 @@ func (j *JWT) MobileParseToken(tokenString string) (*usersReq.CustomClaims, erro
 	}
 	if token != nil {
 		if claims, ok := token.Claims.(*usersReq.CustomClaims); ok && token.Valid {
-			fmt.Println("claims", claims)
 			return claims, nil
 		}
 		return nil, TokenInvalid

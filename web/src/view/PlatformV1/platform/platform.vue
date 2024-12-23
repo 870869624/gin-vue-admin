@@ -89,6 +89,7 @@
             </template>
         </el-table-column>
           <el-table-column align="left" label="平台链接" prop="platformUrl" width="120" />
+          <el-table-column align="left" label="平台描述" prop="brief" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -141,6 +142,9 @@
             <el-form-item label="平台链接:"  prop="platformUrl" >
               <el-input v-model="formData.platformUrl" :clearable="true"  placeholder="请输入平台链接" />
             </el-form-item>
+            <el-form-item label="平台描述:"  prop="brief" >
+              <el-input v-model="formData.brief" :clearable="true"  placeholder="请输入平台描述" />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -160,6 +164,9 @@
                     </el-descriptions-item>
                     <el-descriptions-item label="平台链接">
                         {{ detailFrom.platformUrl }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="平台描述">
+                        {{ detailFrom.brief }}
                     </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -211,6 +218,7 @@ const formData = ref({
             platformIsShow: false,
             publicChainId: '',
             platformUrl: '',
+            brief: '',
         })
 
 
@@ -246,6 +254,17 @@ const rule = reactive({
               }
               ],
                platformUrl : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               brief : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -436,6 +455,7 @@ const closeDialog = () => {
         platformIsShow: false,
         publicChainId: '',
         platformUrl: '',
+        brief: '',
         }
 }
 // 弹窗确定

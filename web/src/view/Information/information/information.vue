@@ -59,7 +59,9 @@
         <div class="gva-btn-list">
             <el-button  type="primary" icon="plus" @click="openDialog">新增</el-button>
             <el-button  icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
-            
+            <ExportTemplate  template-id="Information_Information" />
+            <ExportExcel  template-id="Information_Information" />
+            <ImportExcel  template-id="Information_Information" @on-success="getTableData" />
         </div>
         <el-table
         ref="multipleTable"
@@ -90,6 +92,16 @@
             {{ filterDict(scope.row.publicChainId,PublicChainOptions) }}
             </template>
         </el-table-column>
+          <el-table-column label="封面图" prop="picture" width="200">
+              <template #default="scope">
+                <el-image preview-teleported style="width: 100px; height: 100px" :src="getUrl(scope.row.picture)" fit="cover"/>
+              </template>
+          </el-table-column>
+          <el-table-column label="作者头像" prop="authorHeadImg" width="200">
+              <template #default="scope">
+                <el-image preview-teleported style="width: 100px; height: 100px" :src="getUrl(scope.row.authorHeadImg)" fit="cover"/>
+              </template>
+          </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -139,6 +151,18 @@
                 <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
+            <el-form-item label="封面图:"  prop="picture" >
+                <SelectImage
+                 v-model="formData.picture"
+                 file-type="image"
+                />
+            </el-form-item>
+            <el-form-item label="作者头像:"  prop="authorHeadImg" >
+                <SelectImage
+                 v-model="formData.authorHeadImg"
+                 file-type="image"
+                />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -159,6 +183,12 @@
                     <el-descriptions-item label="公链id">
                         {{ detailFrom.publicChainId }}
                     </el-descriptions-item>
+                    <el-descriptions-item label="封面图">
+                            <el-image style="width: 50px; height: 50px" :preview-src-list="returnArrImg(detailFrom.picture)" :src="getUrl(detailFrom.picture)" fit="cover" />
+                    </el-descriptions-item>
+                    <el-descriptions-item label="作者头像">
+                            <el-image style="width: 50px; height: 50px" :preview-src-list="returnArrImg(detailFrom.authorHeadImg)" :src="getUrl(detailFrom.authorHeadImg)" fit="cover" />
+                    </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
 
@@ -174,6 +204,9 @@ import {
   findInformation,
   getInformationList
 } from '@/api/Information/information'
+import { getUrl } from '@/utils/image'
+// 图片选择组件
+import SelectImage from '@/components/selectImage/selectImage.vue'
 // 富文本组件
 import RichEdit from '@/components/richtext/rich-edit.vue'
 
@@ -182,7 +215,12 @@ import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, r
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 
-
+// 导出组件
+import ExportExcel from '@/components/exportExcel/exportExcel.vue'
+// 导入组件
+import ImportExcel from '@/components/exportExcel/importExcel.vue'
+// 导出模板组件
+import ExportTemplate from '@/components/exportExcel/exportTemplate.vue'
 
 
 defineOptions({
@@ -203,12 +241,26 @@ const formData = ref({
             content: '',
             is_Show: false,
             publicChainId: '',
+            picture: "",
+            authorHeadImg: "",
         })
 
 
 
 // 验证规则
 const rule = reactive({
+               picture : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               authorHeadImg : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
 })
 
 const searchRule = reactive({
@@ -389,6 +441,8 @@ const closeDialog = () => {
         content: '',
         is_Show: false,
         publicChainId: '',
+        picture: "",
+        authorHeadImg: "",
         }
 }
 // 弹窗确定

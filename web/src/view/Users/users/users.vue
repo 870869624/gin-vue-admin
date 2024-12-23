@@ -20,21 +20,6 @@
         <el-form-item label="用户名" prop="username">
          <el-input v-model="searchInfo.username" placeholder="搜索条件" />
         </el-form-item>
-        <el-form-item label="邮件" prop="email">
-         <el-input v-model="searchInfo.email" placeholder="搜索条件" />
-        </el-form-item>
-        <el-form-item label="电话号码" prop="phoneNumber">
-         <el-input v-model="searchInfo.phoneNumber" placeholder="搜索条件" />
-        </el-form-item>
-        <el-form-item label="年龄" prop="age">
-            
-             <el-input v-model.number="searchInfo.age" placeholder="搜索条件" />
-        </el-form-item>
-           <el-form-item label="性别" prop="gender">
-            <el-select v-model="searchInfo.gender" clearable placeholder="请选择" @clear="()=>{searchInfo.gender=undefined}">
-              <el-option v-for="(item,key) in genderOptions" :key="key" :label="item.label" :value="item.value" />
-            </el-select>
-            </el-form-item>
 
         <template v-if="showAllQuery">
           <!-- 将需要控制显示状态的查询条件添加到此范围内 -->
@@ -71,24 +56,15 @@
         </el-table-column>
         
           <el-table-column align="left" label="用户名" prop="username" width="120" />
-          <el-table-column align="left" label="密码" prop="password" width="120" />
-          <el-table-column align="left" label="邮件" prop="email" width="120" />
-          <el-table-column align="left" label="电话号码" prop="phoneNumber" width="120" />
           <el-table-column label="头像" prop="avatar" width="200">
               <template #default="scope">
                 <el-image preview-teleported style="width: 100px; height: 100px" :src="getUrl(scope.row.avatar)" fit="cover"/>
               </template>
           </el-table-column>
-          <el-table-column align="left" label="个人简介" prop="brief" width="120" />
-          <el-table-column align="left" label="年龄" prop="age" width="120" />
-        <el-table-column align="left" label="性别" prop="gender" width="120">
-            <template #default="scope">
-            {{ filterDict(scope.row.gender,genderOptions) }}
-            </template>
-        </el-table-column>
-          <el-table-column align="left" label="住址" prop="address" width="120" />
-          <el-table-column align="left" label="小狐狸钱包地址" prop="metaMask" width="120" />
+          <el-table-column align="left" label="小狐狸钱包余额" prop="metaMaskMoney" width="120" />
           <el-table-column align="left" label="TP钱包地址" prop="tokenPocket" width="120" />
+          <el-table-column align="left" label="小狐狸钱包地址" prop="metaMask" width="120" />
+          <el-table-column align="left" label="TP钱包余额" prop="tokenPocketMoney" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -124,40 +100,23 @@
             <el-form-item label="用户名:"  prop="username" >
               <el-input v-model="formData.username" :clearable="true"  placeholder="请输入用户名" />
             </el-form-item>
-            <el-form-item label="密码:"  prop="password" >
-              <el-input v-model="formData.password" :clearable="true"  placeholder="请输入密码" />
-            </el-form-item>
-            <el-form-item label="邮件:"  prop="email" >
-              <el-input v-model="formData.email" :clearable="true"  placeholder="请输入邮件" />
-            </el-form-item>
-            <el-form-item label="电话号码:"  prop="phoneNumber" >
-              <el-input v-model="formData.phoneNumber" :clearable="true"  placeholder="请输入电话号码" />
-            </el-form-item>
             <el-form-item label="头像:"  prop="avatar" >
                 <SelectImage
                  v-model="formData.avatar"
                  file-type="image"
                 />
             </el-form-item>
-            <el-form-item label="个人简介:"  prop="brief" >
-              <el-input v-model="formData.brief" :clearable="true"  placeholder="请输入个人简介" />
+            <el-form-item label="小狐狸钱包余额:"  prop="metaMaskMoney" >
+              <el-input-number v-model="formData.metaMaskMoney"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="年龄:"  prop="age" >
-              <el-input v-model.number="formData.age" :clearable="true" placeholder="请输入年龄" />
-            </el-form-item>
-            <el-form-item label="性别:"  prop="gender" >
-              <el-select v-model="formData.gender" placeholder="请选择性别" style="width:100%" :clearable="true" >
-                <el-option v-for="(item,key) in genderOptions" :key="key" :label="item.label" :value="item.value" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="住址:"  prop="address" >
-              <el-input v-model="formData.address" :clearable="true"  placeholder="请输入住址" />
+            <el-form-item label="TP钱包地址:"  prop="tokenPocket" >
+              <el-input v-model="formData.tokenPocket" :clearable="true"  placeholder="请输入TP钱包地址" />
             </el-form-item>
             <el-form-item label="小狐狸钱包地址:"  prop="metaMask" >
               <el-input v-model="formData.metaMask" :clearable="true"  placeholder="请输入小狐狸钱包地址" />
             </el-form-item>
-            <el-form-item label="TP钱包地址:"  prop="tokenPocket" >
-              <el-input v-model="formData.tokenPocket" :clearable="true"  placeholder="请输入TP钱包地址" />
+            <el-form-item label="TP钱包余额:"  prop="tokenPocketMoney" >
+              <el-input-number v-model="formData.tokenPocketMoney"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -167,35 +126,20 @@
                     <el-descriptions-item label="用户名">
                         {{ detailFrom.username }}
                     </el-descriptions-item>
-                    <el-descriptions-item label="密码">
-                        {{ detailFrom.password }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="邮件">
-                        {{ detailFrom.email }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="电话号码">
-                        {{ detailFrom.phoneNumber }}
-                    </el-descriptions-item>
                     <el-descriptions-item label="头像">
                             <el-image style="width: 50px; height: 50px" :preview-src-list="returnArrImg(detailFrom.avatar)" :src="getUrl(detailFrom.avatar)" fit="cover" />
                     </el-descriptions-item>
-                    <el-descriptions-item label="个人简介">
-                        {{ detailFrom.brief }}
+                    <el-descriptions-item label="小狐狸钱包余额">
+                        {{ detailFrom.metaMaskMoney }}
                     </el-descriptions-item>
-                    <el-descriptions-item label="年龄">
-                        {{ detailFrom.age }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="性别">
-                        {{ detailFrom.gender }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="住址">
-                        {{ detailFrom.address }}
+                    <el-descriptions-item label="TP钱包地址">
+                        {{ detailFrom.tokenPocket }}
                     </el-descriptions-item>
                     <el-descriptions-item label="小狐狸钱包地址">
                         {{ detailFrom.metaMask }}
                     </el-descriptions-item>
-                    <el-descriptions-item label="TP钱包地址">
-                        {{ detailFrom.tokenPocket }}
+                    <el-descriptions-item label="TP钱包余额">
+                        {{ detailFrom.tokenPocketMoney }}
                     </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -240,19 +184,13 @@ const btnLoading = ref(false)
 const showAllQuery = ref(false)
 
 // 自动化生成的字典（可能为空）以及字段
-const genderOptions = ref([])
 const formData = ref({
             username: '',
-            password: '',
-            email: '',
-            phoneNumber: '',
             avatar: "",
-            brief: '',
-            age: undefined,
-            gender: '',
-            address: '',
-            metaMask: '',
+            metaMaskMoney: 0,
             tokenPocket: '',
+            metaMask: '',
+            tokenPocketMoney: 0,
         })
 
 
@@ -260,50 +198,6 @@ const formData = ref({
 // 验证规则
 const rule = reactive({
                username : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               password : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               email : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               phoneNumber : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               gender : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -386,7 +280,6 @@ getTableData()
 
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async () =>{
-    genderOptions.value = await getDictFunc('gender')
 }
 
 // 获取需要的字典 可能为空 按需保留
@@ -487,16 +380,11 @@ const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
         username: '',
-        password: '',
-        email: '',
-        phoneNumber: '',
         avatar: "",
-        brief: '',
-        age: undefined,
-        gender: '',
-        address: '',
-        metaMask: '',
+        metaMaskMoney: 0,
         tokenPocket: '',
+        metaMask: '',
+        tokenPocketMoney: 0,
         }
 }
 // 弹窗确定

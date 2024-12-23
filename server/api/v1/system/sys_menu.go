@@ -1,6 +1,8 @@
 package system
 
 import (
+	"fmt"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
@@ -33,7 +35,8 @@ func (a *AuthorityMenuApi) GetMenu(c *gin.Context) {
 	if menus == nil {
 		menus = []system.SysMenu{}
 	}
-	response.OkWithDetailed(systemRes.SysMenusResponse{Menus: menus}, "获取成功", c)
+	s := fmt.Sprintf("authId =  %d", utils.GetUserAuthorityId(c))
+	response.OkWithDetailed(systemRes.SysMenusResponse{Menus: menus}, "获取成功"+s, c)
 }
 
 // GetBaseMenuTree

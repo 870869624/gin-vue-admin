@@ -18,14 +18,14 @@ func (airdropService *AirdropService) CreateAirdrop(airdrop *Airdrop.Airdrop) (e
 // DeleteAirdrop 删除空投项目记录
 // Author [yourname](https://github.com/yourname)
 func (airdropService *AirdropService) DeleteAirdrop(ID string) (err error) {
-	err = global.GVA_DB.Delete(&Airdrop.Airdrop{}, "id = ?", ID).Error
+	err = global.GVA_DB.Unscoped().Delete(&Airdrop.Airdrop{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteAirdropByIds 批量删除空投项目记录
 // Author [yourname](https://github.com/yourname)
 func (airdropService *AirdropService) DeleteAirdropByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Delete(&[]Airdrop.Airdrop{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Unscoped().Delete(&[]Airdrop.Airdrop{}, "id in ?", IDs).Error
 	return err
 }
 
@@ -98,7 +98,7 @@ func (airdropService *AirdropService) MobileGetAirdropInfoList(info AirdropReq.A
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Table(Airdrop.Airdrop.TableName(Airdrop.Airdrop{}) + " a").
-		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,cpc.url,a.public_chain_id,a.user_id")
+		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.user_id")
 	var airdrops []Airdrop.MobileAirdropResp
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
@@ -137,4 +137,11 @@ func (airdropService *AirdropService) MobileGetAirdropInfoList(info AirdropReq.A
 
 	err = db.Find(&airdrops).Error
 	return airdrops, total, err
+}
+
+func (airdropService *AirdropService) CreateAirdropMobile(airdrop1 *Airdrop.MobileAirdropCre) (err error) {
+	airdrop := &Airdrop.Airdrop{}
+	airdrop.ToArgs(airdrop1)
+	err = global.GVA_DB.Where(airdrop.TableName()).Create(airdrop).Error
+	return err
 }

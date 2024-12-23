@@ -2,6 +2,7 @@ package example
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"strings"
 
@@ -96,7 +97,7 @@ func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, 
 	}
 	s := strings.Split(header.Filename, ".")
 	f := example.ExaFileUploadAndDownload{
-		Url:  filePath,
+		Url:  fmt.Sprintf("http://59.110.161.193:80/%s", filePath),
 		Name: header.Filename,
 		Tag:  s[len(s)-1],
 		Key:  key,

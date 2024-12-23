@@ -20,6 +20,12 @@
               <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
            </el-select>
        </el-form-item>
+        <el-form-item label="封面图:" prop="picture">
+          <SelectImage v-model="formData.picture" file-type="image"/>
+       </el-form-item>
+        <el-form-item label="作者头像:" prop="authorHeadImg">
+          <SelectImage v-model="formData.authorHeadImg" file-type="image"/>
+       </el-form-item>
         <el-form-item>
           <el-button :loading="btnLoading" type="primary" @click="save">保存</el-button>
           <el-button type="primary" @click="back">返回</el-button>
@@ -45,6 +51,8 @@ import { getDictFunc } from '@/utils/format'
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
+// 图片选择组件
+import SelectImage from '@/components/selectImage/selectImage.vue'
 // 富文本组件
 import RichEdit from '@/components/richtext/rich-edit.vue'
 
@@ -63,9 +71,21 @@ const formData = ref({
             content: '',
             is_Show: false,
             publicChainId: '',
+            picture: "",
+            authorHeadImg: "",
         })
 // 验证规则
 const rule = reactive({
+               picture : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               authorHeadImg : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
 })
 
 const elFormRef = ref()

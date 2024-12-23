@@ -8,6 +8,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/router/Presale"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/PublicChain"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/Users"
+	"github.com/flipped-aurora/gin-vue-admin/server/router/Vip"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/Vote"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/VoteRecord"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/example"
@@ -30,4 +31,5 @@ type RouterGroup struct {
 	Platform         platform.RouterGroup
 	PlatformV1       PlatformV1.RouterGroup
 	Presale          Presale.RouterGroup
+	Vip              Vip.RouterGroup
 }

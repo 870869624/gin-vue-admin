@@ -8,6 +8,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/Presale"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/PublicChain"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/Users"
+	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/Vip"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/Vote"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/VoteRecord"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/example"
@@ -30,4 +31,5 @@ type ApiGroup struct {
 	PlatformApiGroup         platform.ApiGroup
 	PlatformV1ApiGroup       PlatformV1.ApiGroup
 	PresaleApiGroup          Presale.ApiGroup
+	VipApiGroup              Vip.ApiGroup
 }

@@ -25,7 +25,7 @@ captcha:
     key-long: 6
     img-width: 240
     img-height: 80
-    open-captcha: 3
+    open-captcha: 10
     open-captcha-timeout: 3600
 cloudflare-r2:
     bucket: xxxx0bucket
@@ -89,7 +89,7 @@ jwt:
     issuer: qmPlus
 local:
     path: uploads/file
-    store-path: uploads/file
+    store-path: dist/uploads/file
 minio:
     endpoint: yourEndpoint
     access-key-id: yourAccessKeyId
@@ -130,11 +130,11 @@ mssql:
 mysql:
     prefix: ""
     port: "3306"
-    config: charset=utf8mb4&parseTime=True&loc=Local
+    config: charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true
     db-name: candies
-    username: root
+    username: candies
     password: "123456"
-    path: 127.0.0.1
+    path: 59.110.161.193
     engine: ""
     log-mode: error
     max-idle-conns: 10

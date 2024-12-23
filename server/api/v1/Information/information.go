@@ -166,3 +166,34 @@ func (informationApi *InformationApi) GetInformationPublic(c *gin.Context) {
 		"info": "不需要鉴权的资讯接口信息",
 	}, "获取成功", c)
 }
+func (informationApi *InformationApi) FindInformationMobile(c *gin.Context) {
+	ID := c.Query("ID")
+	reinformation, err := informationService.GetInformationMobile(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithData(reinformation, c)
+}
+
+func (informationApi *InformationApi) GetInformationListMobile(c *gin.Context) {
+	var pageInfo InformationReq.InformationSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	list, total, err := informationService.GetInformationInfoListMobile(pageInfo)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
+	}, "获取成功", c)
+}

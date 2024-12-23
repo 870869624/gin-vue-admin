@@ -1,17 +1,19 @@
 package Users
 
 import (
+	"fmt"
+	"math/big"
 	"time"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Users"
 	UsersReq "github.com/flipped-aurora/gin-vue-admin/server/model/Users/request"
 	usersRes "github.com/flipped-aurora/gin-vue-admin/server/model/Users/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils/contract"
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	"go.uber.org/zap"
 )
 
@@ -173,9 +175,6 @@ func (usersApi *UsersApi) GetUsersPublic(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-// Login
-// @Tags     Base
-// @Summary  用户登录
 // @Produce   application/json
 // @Param    data  body      systemReq.Login                                             true  "用户名, 密码, 验证码"
 // @Success  200   {object}  response.Response{data=systemRes.LoginResponse,msg=string}  "返回包括用户信息,token,过期时间"
@@ -185,11 +184,6 @@ func (usersApi *UsersApi) Login(c *gin.Context) {
 	err := c.ShouldBindJSON(&l)
 	key := c.ClientIP()
 
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	err = utils.Verify(l, utils.LoginVerify)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
@@ -206,13 +200,18 @@ func (usersApi *UsersApi) Login(c *gin.Context) {
 	var oc bool = openCaptcha == 0 || openCaptcha < interfaceToInt(v)
 
 	if !oc || (l.CaptchaId != "" && l.Captcha != "" && store.Verify(l.CaptchaId, l.Captcha, true)) {
-		u := &Users.Users{Username: &l.Username, Password: &l.Password}
-		user, err := usersService.Login(u)
+		var u Users.Users
+		if l.MetaMask != "" {
+			u = Users.Users{MetaMask: &l.MetaMask, MetaMaskMoney: &l.MetaMaskMoney, Username: &l.Username}
+		} else if l.TokenPocket != "" {
+			u = Users.Users{TokenPocket: &l.TokenPocket, TokenPocketMoney: &l.TokenPocketMoney, Username: &l.Username}
+		}
+		user, err := usersService.Login(&u)
 		if err != nil {
 			global.GVA_LOG.Error("登陆失败! 用户名不存在或者密码错误!", zap.Error(err))
 			// 验证码次数+1
 			global.BlackCache.Increment(key, 1)
-			response.FailWithMessage("用户名不存在或者密码错误", c)
+			response.FailWithMessage("用户名不存在或者密码错误"+err.Error(), c)
 			return
 		}
 		usersApi.TokenNext(c, *user)
@@ -225,208 +224,111 @@ func (usersApi *UsersApi) Login(c *gin.Context) {
 
 // TokenNext 登录以后签发jwt
 func (usersApi *UsersApi) TokenNext(c *gin.Context, user Users.Users) {
-	token, claims, err := utils.MobileLoginToken(&user)
+	token, claims, err := utils.MobileLoginToken(user)
 	if err != nil {
 		global.GVA_LOG.Error("获取token失败!", zap.Error(err))
 		response.FailWithMessage("获取token失败", c)
 		return
 	}
-	if !global.GVA_CONFIG.System.UseMultipoint {
-		utils.SetToken(c, token, int(claims.RegisteredClaims.ExpiresAt.Unix()-time.Now().Unix()))
-		response.OkWithDetailed(usersRes.LoginResponse{
-			User:      user,
-			Token:     token,
-			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix() * 1000,
-		}, "登录成功", c)
-		return
-	}
-
-	if jwtStr, err := jwtService.GetRedisJWT(*user.Username); err == redis.Nil {
-		if err := jwtService.SetRedisJWT(token, *user.Username); err != nil {
-			global.GVA_LOG.Error("设置登录状态失败!", zap.Error(err))
-			response.FailWithMessage("设置登录状态失败", c)
-			return
-		}
-		utils.SetToken(c, token, int(claims.RegisteredClaims.ExpiresAt.Unix()-time.Now().Unix()))
-		response.OkWithDetailed(usersRes.LoginResponse{
-			User:      user,
-			Token:     token,
-			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix() * 1000,
-		}, "登录成功", c)
-	} else if err != nil {
-		global.GVA_LOG.Error("设置登录状态失败!", zap.Error(err))
-		response.FailWithMessage("设置登录状态失败", c)
-	} else {
-		var blackJWT system.JwtBlacklist
-		blackJWT.Jwt = jwtStr
-		if err := jwtService.JsonInBlacklist(blackJWT); err != nil {
-			response.FailWithMessage("jwt作废失败", c)
-			return
-		}
-		if err := jwtService.SetRedisJWT(token, user.GetUsername()); err != nil {
-			response.FailWithMessage("设置登录状态失败", c)
-			return
-		}
-		utils.SetToken(c, token, int(claims.RegisteredClaims.ExpiresAt.Unix()-time.Now().Unix()))
-		response.OkWithDetailed(usersRes.LoginResponse{
-			User:      user,
-			Token:     token,
-			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix() * 1000,
-		}, "登录成功", c)
-	}
+	response.OkWithDetailed(usersRes.LoginResponse{
+		User:      user,
+		Token:     token,
+		ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix() * 1000,
+	}, "登录成功", c)
 }
 
-// Register
-// @Tags     SysUser
-// @Summary  用户注册账号
-// @Produce   application/json
-// @Param    data  body      systemReq.Register                                            true  "用户名, 昵称, 密码, 角色ID"
-// @Success  200   {object}  response.Response{data=systemRes.SysUserResponse,msg=string}  "用户注册账号,返回包括用户信息"
-// @Router   /user/admin_register [post]
-func (usersApi *UsersApi) Register(c *gin.Context) {
-	var r UsersReq.Register
-	err := c.ShouldBindJSON(&r)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	err = utils.Verify(r, utils.RegisterVerify)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-
-	user := &Users.Users{Username: &r.Username, Password: &r.Password, Avatar: r.Avatar, Gender: &r.Gender, PhoneNumber: &r.PhoneNumber, Email: &r.Email, MetaMask: &r.MetaMask, Brief: &r.Brief, TokenPocket: &r.TokenPocket}
-	userReturn, err := usersService.Register(user)
-	if err != nil {
-		global.GVA_LOG.Error("注册失败!", zap.Error(err))
-		response.FailWithDetailed(usersRes.UsersResponse{User: *userReturn}, "注册失败", c)
-		return
-	}
-	response.OkWithDetailed(usersRes.UsersResponse{User: *userReturn}, "注册成功", c)
-}
-
-// ChangePassword
-// @Tags      SysUser
-// @Summary   用户修改密码
-// @Security  ApiKeyAuth
-// @Produce  application/json
-// @Param     data  body      systemReq.ChangePasswordReq    true  "用户名, 原密码, 新密码"
-// @Success   200   {object}  response.Response{msg=string}  "用户修改密码"
-// @Router    /user/changePassword [post]
-func (usersApi *UsersApi) ChangePassword(c *gin.Context) {
-	var req UsersReq.ChangePasswordReq
-	err := c.ShouldBindJSON(&req)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	err = utils.Verify(req, utils.ChangePasswordVerify)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
+func (usersApi *UsersApi) Balance(c *gin.Context) {
+	utils.ClearToken(c)
+	address := c.Query("address")
 	uid := utils.GetMobileUserID(c)
-	u := &Users.Users{GVA_MODEL: global.GVA_MODEL{ID: uid}, Password: &req.Password}
-	_, err = usersService.ChangePassword(u, req.NewPassword)
-	if err != nil {
-		global.GVA_LOG.Error("修改失败!", zap.Error(err))
-		response.FailWithMessage("修改失败，原密码与当前账户不符", c)
+	if uid == 0 {
+		response.FailWithMessage("查询失败:用户ID为空", c)
 		return
 	}
-	response.OkWithMessage("修改成功", c)
+	userId := int(uid)
+
+	user := &Users.Users{
+		GVA_MODEL: global.GVA_MODEL{ID: uint(userId)},
+	}
+	if err := global.GVA_DB.Debug().Table(user.TableName()).Where(user).First(user).Error; err != nil {
+		response.FailWithMessage("用户信息错误"+err.Error(), c)
+		return
+	}
+
+	if *user.MetaMask != address && *user.TokenPocket != address {
+		fmt.Println(user.MetaMask, address)
+		response.FailWithMessage("用户信息错误", c)
+		return
+	}
+
+	fromAddress, instance, _, err := contract.GetServe(address)
+	if err != nil {
+		response.FailWithMessage("获取网络错误"+err.Error(), c)
+		return
+	}
+
+	opts := &bind.CallOpts{
+		From: *fromAddress,
+	}
+	balance, err := instance.BalanceOf(opts, *fromAddress)
+	if err != nil {
+		response.FailWithMessage("获取金额错误"+err.Error(), c)
+		return
+	}
+
+	if *user.MetaMask != address {
+		if err := global.GVA_DB.Debug().Table(user.TableName()).Where(user).Update("meta_mask_money", balance).Error; err != nil {
+			response.FailWithMessage("用户信息错误"+err.Error(), c)
+			return
+		}
+	} else if *user.TokenPocket != address {
+		if err := global.GVA_DB.Debug().Table(user.TableName()).Where(user).Update("token_pocket_money", balance).Error; err != nil {
+			response.FailWithMessage("用户信息错误"+err.Error(), c)
+			return
+		}
+	}
+	response.OkWithDetailed(gin.H{
+		"balance": balance,
+	}, "获取成功", c)
 }
 
-// // DeleteUser
-// // @Tags      SysUser
-// // @Summary   删除用户
-// // @Security  ApiKeyAuth
-// // @accept    application/json
-// // @Produce   application/json
-// // @Param     data  body      request.GetById                true  "用户ID"
-// // @Success   200   {object}  response.Response{msg=string}  "删除用户"
-// // @Router    /user/deleteUser [delete]
-// func (usersApi *UsersApi) DeleteUser(c *gin.Context) {
-// 	var reqId request.GetById
-// 	err := c.ShouldBindJSON(&reqId)
-// 	if err != nil {
-// 		response.FailWithMessage(err.Error(), c)
-// 		return
-// 	}
-// 	err = utils.Verify(reqId, utils.IdVerify)
-// 	if err != nil {
-// 		response.FailWithMessage(err.Error(), c)
-// 		return
-// 	}
-// 	jwtId := utils.GetUserID(c)
-// 	if jwtId == uint(reqId.ID) {
-// 		response.FailWithMessage("删除失败, 无法删除自己。", c)
-// 		return
-// 	}
-// 	err = userService.DeleteUser(reqId.ID)
-// 	if err != nil {
-// 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
-// 		response.FailWithMessage("删除失败", c)
-// 		return
-// 	}
-// 	response.OkWithMessage("删除成功", c)
-// }
+func ChangeNumber(balance string) string {
+	number, _ := new(big.Int).SetString(balance, 10)
 
-// // SetSelfInfo
-// // @Tags      SysUser
-// // @Summary   设置用户信息
-// // @Security  ApiKeyAuth
-// // @accept    application/json
-// // @Produce   application/json
-// // @Param     data  body      system.SysUser                                             true  "ID, 用户名, 昵称, 头像链接"
-// // @Success   200   {object}  response.Response{data=map[string]interface{},msg=string}  "设置用户信息"
-// // @Router    /user/SetSelfInfo [put]
-// func (usersApi *UsersApi) SetSelfInfo(c *gin.Context) {
-// 	var user systemReq.ChangeUserInfo
-// 	err := c.ShouldBindJSON(&user)
-// 	if err != nil {
-// 		response.FailWithMessage(err.Error(), c)
-// 		return
-// 	}
-// 	user.ID = utils.GetUserID(c)
-// 	err = userService.SetSelfInfo(system.SysUser{
-// 		GVA_MODEL: global.GVA_MODEL{
-// 			ID: user.ID,
-// 		},
-// 		NickName:  user.NickName,
-// 		HeaderImg: user.HeaderImg,
-// 		Phone:     user.Phone,
-// 		Email:     user.Email,
-// 		Enable:    user.Enable,
-// 	})
-// 	if err != nil {
-// 		global.GVA_LOG.Error("设置失败!", zap.Error(err))
-// 		response.FailWithMessage("设置失败", c)
-// 		return
-// 	}
-// 	response.OkWithMessage("设置成功", c)
-// }
+	// 定义除数
+	divisor := new(big.Int).SetInt64(1000000000000000000)
 
-// // ResetPassword
-// // @Tags      SysUser
-// // @Summary   重置用户密码
-// // @Security  ApiKeyAuth
-// // @Produce  application/json
-// // @Param     data  body      system.SysUser                 true  "ID"
-// // @Success   200   {object}  response.Response{msg=string}  "重置用户密码"
-// // @Router    /user/resetPassword [post]
-// func (usersApi *UsersApi) ResetPassword(c *gin.Context) {
-// 	var user system.SysUser
-// 	err := c.ShouldBindJSON(&user)
-// 	if err != nil {
-// 		response.FailWithMessage(err.Error(), c)
-// 		return
-// 	}
-// 	err = userService.ResetPassword(user.ID)
-// 	if err != nil {
-// 		global.GVA_LOG.Error("重置失败!", zap.Error(err))
-// 		response.FailWithMessage("重置失败"+err.Error(), c)
-// 		return
-// 	}
-// 	response.OkWithMessage("重置成功", c)
-// }
+	// 转换为big.Float以保持精度
+	numberFloat := new(big.Float).SetInt(number)
+	divisorFloat := new(big.Float).SetInt(divisor)
+
+	// 执行除法
+	resultFloat := new(big.Float).Quo(numberFloat, divisorFloat)
+
+	// 格式化输出，保留一位小数
+	// big.Float的Text方法可以按照指定的格式输出，这里是'f'表示定点格式，0表示没有小数位
+	resultStr := resultFloat.Text('f', 1)
+	return resultStr
+}
+
+type req struct {
+	Address string `json:"address" form:"address"`
+}
+
+func (usersApi *UsersApi) Import(c *gin.Context) {
+	var req req
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	fromAddress, err := contract.GetAddress(req.Address)
+	if err != nil {
+		response.FailWithMessage("获取网络错误"+err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{
+		"address": fromAddress,
+	}, "获取成功", c)
+}

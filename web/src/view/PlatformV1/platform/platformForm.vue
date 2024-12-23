@@ -20,6 +20,9 @@
         <el-form-item label="平台链接:" prop="platformUrl">
           <el-input v-model="formData.platformUrl" :clearable="true"  placeholder="请输入平台链接" />
        </el-form-item>
+        <el-form-item label="平台描述:" prop="brief">
+          <el-input v-model="formData.brief" :clearable="true"  placeholder="请输入平台描述" />
+       </el-form-item>
         <el-form-item>
           <el-button :loading="btnLoading" type="primary" @click="save">保存</el-button>
           <el-button type="primary" @click="back">返回</el-button>
@@ -63,6 +66,7 @@ const formData = ref({
             platformIsShow: false,
             publicChainId: '',
             platformUrl: '',
+            brief: '',
         })
 // 验证规则
 const rule = reactive({
@@ -82,6 +86,11 @@ const rule = reactive({
                    trigger: ['input','blur'],
                }],
                platformUrl : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               brief : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

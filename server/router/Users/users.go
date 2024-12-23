@@ -26,11 +26,11 @@ func (s *UsersRouter) InitUsersRouter(Router *gin.RouterGroup, PublicRouter *gin
 		usersRouterWithoutAuth.GET("getUsersPublic", usersApi.GetUsersPublic) // 用户列表开放接口
 	}
 
-	//移动端接口
-	usersRouterWithoutAuth.POST("register", usersApi.Register)
 	usersRouterWithoutAuth.POST("login", usersApi.Login)
+	usersRouterWithoutAuth.POST("import/v1", usersApi.Import)
 	PrivateGroup := usersRouterWithoutAuth.Use(middleware.MoblileJWTAuth())
 	{
-		PrivateGroup.PUT("changePassword", usersApi.ChangePassword)
+		PrivateGroup.GET("balance/v1", usersApi.Balance)
 	}
+
 }

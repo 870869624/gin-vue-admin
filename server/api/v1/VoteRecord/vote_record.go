@@ -1,10 +1,13 @@
 package VoteRecord
 
 import (
+	"strconv"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/VoteRecord"
 	VoteRecordReq "github.com/flipped-aurora/gin-vue-admin/server/model/VoteRecord/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -165,4 +168,44 @@ func (voteRecordApi *VoteRecordApi) GetVoteRecordPublic(c *gin.Context) {
 	response.OkWithDetailed(gin.H{
 		"info": "不需要鉴权的投票记录接口信息",
 	}, "获取成功", c)
+}
+
+func (voteRecordApi *VoteRecordApi) GetVoteRecordNumber(c *gin.Context) {
+	uid := utils.GetMobileUserID(c)
+	userId := int(uid)
+	revoteRecord, err := voteRecordService.MobileCountMyVoteRecord(strconv.Itoa(userId))
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithData(revoteRecord, c)
+}
+
+func (voteRecordApi *VoteRecordApi) GetAllVoteRecordNumber(c *gin.Context) {
+	var revoteRecord1 int64
+	var err error
+	uid := utils.GetMobileUserID(c)
+	if uid != 0 {
+		userId := int(uid)
+		revoteRecord1, err = voteRecordService.MobileCountMyVoteRecord(strconv.Itoa(userId))
+		if err != nil {
+			global.GVA_LOG.Error("查询失败!", zap.Error(err))
+			response.FailWithMessage("查询失败:"+err.Error(), c)
+			return
+		}
+	} else {
+		response.FailWithMessage("查询失败:用户ID为空", c)
+		return
+	}
+
+	ID := c.Query("ID")
+	revoteRecord, err := voteRecordService.MobileCountAllVoteRecord(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+	revoteRecord.MyVoteRecord = revoteRecord1
+	response.OkWithData(revoteRecord, c)
 }

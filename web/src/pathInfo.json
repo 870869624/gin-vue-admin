@@ -13,6 +13,8 @@
   "/src/view/PublicChain/publicChain/publicChainForm.vue": "PublicChainForm",
   "/src/view/Users/users/users.vue": "Users",
   "/src/view/Users/users/usersForm.vue": "UsersForm",
+  "/src/view/Vip/vip_record/vip_record.vue": "VipRecord",
+  "/src/view/Vip/vip_record/vip_recordForm.vue": "VipRecordForm",
   "/src/view/Vote/vote/vote.vue": "Vote",
   "/src/view/Vote/vote/voteForm.vue": "VoteForm",
   "/src/view/VoteRecord/voteRecord/voteRecord.vue": "VoteRecord",

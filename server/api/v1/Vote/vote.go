@@ -183,6 +183,10 @@ func (voteApi *VoteApi) MobileCreateVote(c *gin.Context) {
 		return
 	}
 	uid := utils.GetMobileUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("查询失败:用户ID为空", c)
+		return
+	}
 	userId := int(uid)
 	vote.UserId = &userId
 	vote.VoteIsShow = &isShow
@@ -197,9 +201,17 @@ func (voteApi *VoteApi) MobileCreateVote(c *gin.Context) {
 	response.OkWithMessage("创建成功", c)
 }
 
+type Req struct {
+	ID string `json:"ID"`
+}
+
 func (voteApi *VoteApi) Vote(c *gin.Context) {
-	ID := c.Query("ID")
-	revote, err := voteService.GetVote(ID)
+	var req Req
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	revote, err := voteService.GetVote(req.ID)
 	if err != nil {
 		global.GVA_LOG.Error("查询失败!", zap.Error(err))
 		response.FailWithMessage("查询失败:"+err.Error(), c)
@@ -207,10 +219,27 @@ func (voteApi *VoteApi) Vote(c *gin.Context) {
 	}
 
 	uid := utils.GetMobileUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("查询失败:用户ID为空", c)
+		return
+	}
 	userid := int(uid)
 	revoteId := int(revote.ID)
 
 	id := strconv.Itoa(int(uid))
+
+	revoteRecord, err := voteRecordService.MobileCountMyVoteRecord(strconv.Itoa(userid))
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+
+	if revoteRecord > 0 {
+		response.FailWithMessage("每天只能投票一次", c)
+		return
+	}
+
 	_, err = usersService.GetUsers(id)
 	if err != nil {
 		global.GVA_LOG.Error("查询失败!", zap.Error(err))

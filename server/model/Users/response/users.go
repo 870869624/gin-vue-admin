@@ -1,8 +1,6 @@
 package response
 
-import (
-	"github.com/flipped-aurora/gin-vue-admin/server/model/Users"
-)
+import "github.com/flipped-aurora/gin-vue-admin/server/model/Users"
 
 type UsersResponse struct {
 	User Users.Users `json:"user"`

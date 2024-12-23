@@ -18,14 +18,14 @@ func (presaleService *PresaleService) CreatePresale(presale *Presale.Presale) (e
 // DeletePresale 删除预售项目记录
 // Author [yourname](https://github.com/yourname)
 func (presaleService *PresaleService) DeletePresale(ID string) (err error) {
-	err = global.GVA_DB.Delete(&Presale.Presale{}, "id = ?", ID).Error
+	err = global.GVA_DB.Unscoped().Delete(&Presale.Presale{}, "id = ?", ID).Error
 	return err
 }
 
 // DeletePresaleByIds 批量删除预售项目记录
 // Author [yourname](https://github.com/yourname)
 func (presaleService *PresaleService) DeletePresaleByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Delete(&[]Presale.Presale{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Unscoped().Delete(&[]Presale.Presale{}, "id in ?", IDs).Error
 	return err
 }
 
@@ -95,7 +95,7 @@ func (presaleService *PresaleService) MobileGetPresaleInfoList(info PresaleReq.P
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Table(Presale.Presale.TableName(Presale.Presale{}) + " p").
-		Select("p.id,p.created_at,p.updated_at,p.presale_is_pass,p.presale_is_show,p.presale_name,p.presale_picture,p.presaleurl,p.publicChainId,p.presale_start_time,p.user_id,cpc.logo,cpc.name,cpc.picture,cpc.url")
+		Select("p.id,p.created_at,p.updated_at,p.presale_is_pass,p.presale_is_show,p.presale_name,p.presale_picture,p.presaleurl,p.public_chain_id,p.presale_start_time,p.user_id,cpc.logo,cpc.name,cpc.picture")
 	var presales []Presale.MobilePresale
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
@@ -117,7 +117,7 @@ func (presaleService *PresaleService) MobileGetPresaleInfoList(info PresaleReq.P
 		db = db.Where("p.presale_is_show = ?", *info.PresaleIsShow)
 	}
 	if info.PublicChainId != nil && *info.PublicChainId != "" {
-		db = db.Where("public_chain_id = ?", *info.PublicChainId)
+		db = db.Where("p.public_chain_id = ?", *info.PublicChainId)
 	}
 	err = db.Count(&total).Error
 	if err != nil {
@@ -130,4 +130,11 @@ func (presaleService *PresaleService) MobileGetPresaleInfoList(info PresaleReq.P
 	db.Joins("left join candies_public_chain cpc on p.public_chain_id = cpc.id")
 	err = db.Find(&presales).Error
 	return presales, total, err
+}
+
+func (presaleService *PresaleService) CreatePresaleMobile(presale1 *Presale.MobilePresaleCre) (err error) {
+	presale := &Presale.Presale{}
+	presale.ToArgs(presale1)
+	err = global.GVA_DB.Where(presale.TableName()).Create(presale).Error
+	return err
 }

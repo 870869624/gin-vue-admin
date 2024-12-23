@@ -23,14 +23,14 @@ func (voteService *VoteService) SaveVote(vote *Vote.Vote) (err error) {
 // DeleteVote 删除投票记录
 // Author [yourname](https://github.com/yourname)
 func (voteService *VoteService) DeleteVote(ID string) (err error) {
-	err = global.GVA_DB.Delete(&Vote.Vote{}, "id = ?", ID).Error
+	err = global.GVA_DB.Unscoped().Delete(&Vote.Vote{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteVoteByIds 批量删除投票记录
 // Author [yourname](https://github.com/yourname)
 func (voteService *VoteService) DeleteVoteByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Delete(&[]Vote.Vote{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Unscoped().Delete(&[]Vote.Vote{}, "id in ?", IDs).Error
 	return err
 }
 
@@ -97,7 +97,7 @@ func (voteService *VoteService) MobileGetVoteInfoList(info VoteReq.VoteSearch) (
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Table(Vote.Vote.TableName(Vote.Vote{}) + " v").
-		Select("v.id,v.created_at,v.updated_at,v.vote_is_pass,v.vote_is_show,v.vote_name,v.vote_num,v.vote_picture,v.vote_url,cpc.logo,cpc.name,cpc.picture,cpc.url,v.public_chain_id,v.user_id")
+		Select("v.id,v.created_at,v.updated_at,v.vote_is_pass,v.vote_is_show,v.vote_name,v.vote_num,v.vote_picture,v.vote_url,cpc.logo,cpc.name,cpc.picture,v.public_chain_id,v.user_id")
 	var votes []Vote.MobileVote
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
@@ -125,7 +125,7 @@ func (voteService *VoteService) MobileGetVoteInfoList(info VoteReq.VoteSearch) (
 	}
 
 	if limit != 0 {
-		db = db.Limit(limit).Offset(offset)
+		db = db.Limit(limit).Offset(offset).Order("v.vote_num desc")
 	}
 
 	err = db.Find(&votes).Error
