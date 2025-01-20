@@ -15,9 +15,6 @@
         <el-form-item label="空投项目结束日期:" prop="airdropEndtime">
           <el-date-picker v-model="formData.airdropEndtime" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
-        <el-form-item label="提交者用户id:" prop="userId">
-          <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入" />
-       </el-form-item>
         <el-form-item label="公链id:" prop="publicChainId">
            <el-select v-model="formData.publicChainId" placeholder="请选择公链id" style="width:100%" :clearable="true" >
               <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
@@ -29,8 +26,23 @@
         <el-form-item label="是否展示:" prop="airdropIsShow">
           <el-switch v-model="formData.airdropIsShow" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
-        <el-form-item label="空投项目网址:" prop="airdropUrl">
-          <el-input v-model="formData.airdropUrl" :clearable="true"  placeholder="请输入空投项目网址" />
+        <el-form-item label="空有项目网址:" prop="airdropUrl">
+          <el-input v-model="formData.airdropUrl" :clearable="true"  placeholder="请输入空有项目网址" />
+       </el-form-item>
+        <el-form-item label="简介:" prop="brief">
+          <el-input v-model="formData.brief" :clearable="true"  placeholder="请输入简介" />
+       </el-form-item>
+        <el-form-item label="详情描述:" prop="detail">
+          <RichEdit v-model="formData.detail"/>
+       </el-form-item>
+        <el-form-item label="x链接:" prop="xLink">
+          <el-input v-model="formData.xLink" :clearable="true"  placeholder="请输入x链接" />
+       </el-form-item>
+        <el-form-item label="TG链接:" prop="tgLink">
+          <el-input v-model="formData.tgLink" :clearable="true"  placeholder="请输入TG链接" />
+       </el-form-item>
+        <el-form-item label="discord链接:" prop="discordLink">
+          <el-input v-model="formData.discordLink" :clearable="true"  placeholder="请输入discord链接" />
        </el-form-item>
         <el-form-item>
           <el-button :loading="btnLoading" type="primary" @click="save">保存</el-button>
@@ -59,6 +71,8 @@ import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
 // 图片选择组件
 import SelectImage from '@/components/selectImage/selectImage.vue'
+// 富文本组件
+import RichEdit from '@/components/richtext/rich-edit.vue'
 
 
 const route = useRoute()
@@ -74,11 +88,15 @@ const formData = ref({
             airdropPicture: "",
             airdropValue: 0,
             airdropEndtime: new Date(),
-            userId: undefined,
             publicChainId: '',
             airdropIsPass: false,
             airdropIsShow: false,
             airdropUrl: '',
+            brief: '',
+            detail: '',
+            xLink: '',
+            tgLink: '',
+            discordLink: '',
         })
 // 验证规则
 const rule = reactive({

@@ -33,5 +33,6 @@ func (s *AirdropRouter) InitAirdropRouter(Router *gin.RouterGroup, PublicRouter 
 	airdropMobileRouterWithoutAuth := PublicRouter.Group("airdropMobile")
 	{
 		airdropMobileRouterWithoutAuth.GET("getAirdropList", airdropApi.MobileGetAirdropList) // 获取空投项目列表
+		airdropMobileRouterWithoutAuth.GET("findAirdrop", airdropApi.FindAirdropMobile)       // 根据ID获取空投项目
 	}
 }

@@ -18,14 +18,14 @@ func (informationService *InformationService) CreateInformation(information *Inf
 // DeleteInformation 删除资讯记录
 // Author [yourname](https://github.com/yourname)
 func (informationService *InformationService) DeleteInformation(ID string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&Information.Information{}, "id = ?", ID).Error
+	err = global.GVA_DB.Delete(&Information.Information{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteInformationByIds 批量删除资讯记录
 // Author [yourname](https://github.com/yourname)
 func (informationService *InformationService) DeleteInformationByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&[]Information.Information{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Delete(&[]Information.Information{}, "id in ?", IDs).Error
 	return err
 }
 
@@ -111,6 +111,7 @@ func (informationService *InformationService) GetInformationInfoListMobile(info 
 	if info.PublicChainId != nil && *info.PublicChainId != "" {
 		db = db.Where("public_chain_id = ?", *info.PublicChainId)
 	}
+	db.Where("`deleted_at` IS NULL and is__show = ?", true)
 	err = db.Count(&total).Error
 	if err != nil {
 		return

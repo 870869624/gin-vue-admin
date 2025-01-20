@@ -215,3 +215,14 @@ func (airdropApi *AirdropApi) MobileGetAirdropList(c *gin.Context) {
 		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
 }
+
+func (airdropApi *AirdropApi) FindAirdropMobile(c *gin.Context) {
+	ID := c.Query("ID")
+	reairdrop, err := airdropService.GetAirdropMobile(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithData(reairdrop, c)
+}

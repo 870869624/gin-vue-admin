@@ -163,7 +163,6 @@ func (voteApi *VoteApi) GetVoteList(c *gin.Context) {
 // @Success 200 {object} response.Response{data=object,msg=string} "获取成功"
 // @Router /vote/getVotePublic [get]
 func (voteApi *VoteApi) GetVotePublic(c *gin.Context) {
-
 	// 此接口不需要鉴权
 	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
 	voteService.GetVotePublic()
@@ -187,8 +186,6 @@ func (voteApi *VoteApi) MobileCreateVote(c *gin.Context) {
 		response.FailWithMessage("查询失败:用户ID为空", c)
 		return
 	}
-	userId := int(uid)
-	vote.UserId = &userId
 	vote.VoteIsShow = &isShow
 	vote.VoteIsPass = &isPass
 	vote.VoteNum = &voteNum
@@ -286,4 +283,15 @@ func (voteApi *VoteApi) MobileGetVoteList(c *gin.Context) {
 		Page:     pageInfo.Page,
 		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
+}
+
+func (voteApi *VoteApi) FindVoteMobile(c *gin.Context) {
+	ID := c.Query("ID")
+	revote, err := voteService.GetVoteMobile(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithData(revote, c)
 }

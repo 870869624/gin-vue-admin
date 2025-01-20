@@ -22,24 +22,12 @@ func initBizRouter(routers ...*gin.RouterGroup) {
 		InvitationRecordRouter.InitInvitationRecordRouter(privateGroup, publicGroup)
 	}
 	{
-		AirdropRouter := router.RouterGroupApp.Airdrop
-		AirdropRouter.InitAirdropRouter(privateGroup, publicGroup)
-	}
-	{
 		PlatformV1Router := router.RouterGroupApp.PlatformV1
 		PlatformV1Router.InitPlatformRouter(privateGroup, publicGroup)
 	}
 	{
-		VoteRouter := router.RouterGroupApp.Vote
-		VoteRouter.InitVoteRouter(privateGroup, publicGroup)
-	}
-	{
 		VoteRecordRouter := router.RouterGroupApp.VoteRecord
 		VoteRecordRouter.InitVoteRecordRouter(privateGroup, publicGroup)
-	}
-	{
-		PresaleRouter := router.RouterGroupApp.Presale
-		PresaleRouter.InitPresaleRouter(privateGroup, publicGroup)
 	}
 	{
 		InformationRouter := router.RouterGroupApp.Information
@@ -48,9 +36,29 @@ func initBizRouter(routers ...*gin.RouterGroup) {
 	{
 		VipRouter := router.RouterGroupApp.Vip
 		VipRouter.InitVipRecordRouter(privateGroup, publicGroup)
-	} // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
+	}
 	{
 		UsersRouter := router.RouterGroupApp.Users
 		UsersRouter.InitUsersRouter(privateGroup, publicGroup)
+	}
+	{
+		AirdropRouter := router.RouterGroupApp.Airdrop
+		AirdropRouter.InitAirdropRouter(privateGroup, publicGroup)
+	}
+	{
+		VoteRouter := router.RouterGroupApp.Vote
+		VoteRouter.InitVoteRouter(privateGroup, publicGroup)
+	}
+	{
+		PresaleRouter := router.RouterGroupApp.Presale
+		PresaleRouter.InitPresaleRouter(privateGroup, publicGroup)
+	}
+	{
+		NavigationBarRouter := router.RouterGroupApp.NavigationBar
+		NavigationBarRouter.InitNavigationBarRouter(privateGroup, publicGroup)
+	} // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
+	{
+		NavigationProjectRouter := router.RouterGroupApp.NavigationProject
+		NavigationProjectRouter.InitNavigationProjectRouter(privateGroup, publicGroup)
 	}
 }

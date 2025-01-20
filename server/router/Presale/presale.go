@@ -28,7 +28,7 @@ func (s *PresaleRouter) InitPresaleRouter(Router *gin.RouterGroup, PublicRouter 
 
 	presaleMobileRouterWithoutAuth := PublicRouter.Group("presaleMobile")
 	{
-		presaleMobileRouterWithoutAuth.GET("findPresale", presaleApi.FindPresale)             // 根据ID获取预售项目
+		presaleMobileRouterWithoutAuth.GET("findPresale", presaleApi.FindPresaleMobile)       // 根据ID获取预售项目
 		presaleMobileRouterWithoutAuth.GET("getPresaleList", presaleApi.MobileGetPresaleList) // 获取预售项目列表
 	}
 
@@ -37,4 +37,5 @@ func (s *PresaleRouter) InitPresaleRouter(Router *gin.RouterGroup, PublicRouter 
 	{
 		presaleMobileRouterAuth.POST("createPresale", presaleApi.MobileCreatePresale) // 新建预售项目
 	}
+
 }

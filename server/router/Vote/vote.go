@@ -29,7 +29,7 @@ func (s *VoteRouter) InitVoteRouter(Router *gin.RouterGroup, PublicRouter *gin.R
 	voteMobileRouterWithoutAuth := PublicRouter.Group("voteMobile")
 	{
 		voteMobileRouterWithoutAuth.GET("getVoteList", voteApi.MobileGetVoteList) // 获取投票列表
-		voteMobileRouterWithoutAuth.GET("findVote", voteApi.FindVote)             // 根据ID获取投票
+		voteMobileRouterWithoutAuth.GET("findVote", voteApi.FindVoteMobile)       // 根据ID获取投票
 	}
 
 	voteMobileRouterAuth := PublicRouter.Group("voteMobileAuth")
@@ -38,4 +38,5 @@ func (s *VoteRouter) InitVoteRouter(Router *gin.RouterGroup, PublicRouter *gin.R
 		voteMobileRouterAuth.PUT("vote", voteApi.Vote)                    // 投票
 		voteMobileRouterAuth.POST("createVote", voteApi.MobileCreateVote) // 新建投票
 	}
+
 }

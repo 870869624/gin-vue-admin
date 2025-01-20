@@ -28,6 +28,6 @@ func (s *PlatformRouter) InitPlatformRouter(Router *gin.RouterGroup, PublicRoute
 
 	platformMobileRouterWithoutAuth := PublicRouter.Group("platformMobile")
 	{
-		platformMobileRouterWithoutAuth.GET("getPlatformList", platformApi.GetPlatformList) // 获取空投项目列表
+		platformMobileRouterWithoutAuth.GET("getPlatformList", platformApi.GetPlatformListMobile) // 获取空投项目列表
 	}
 }

@@ -12,7 +12,6 @@ type PresaleSearch struct{
     PresaleName  *string `json:"presaleName" form:"presaleName" `
     StartPresaleStartTime  *time.Time  `json:"startPresaleStartTime" form:"startPresaleStartTime"`
     EndPresaleStartTime  *time.Time  `json:"endPresaleStartTime" form:"endPresaleStartTime"`
-    UserId  *int `json:"userId" form:"userId" `
     PresaleIsPass  *bool `json:"presaleIsPass" form:"presaleIsPass" `
     PresaleIsShow  *bool `json:"presaleIsShow" form:"presaleIsShow" `
     PublicChainId  *string `json:"publicChainId" form:"publicChainId" `

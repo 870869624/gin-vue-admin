@@ -26,14 +26,14 @@ func (usersService *UsersService) CreateUsers(users *Users.Users) (err error) {
 // DeleteUsers 删除用户列表记录
 // Author [yourname](https://github.com/yourname)
 func (usersService *UsersService) DeleteUsers(ID string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&Users.Users{}, "id = ?", ID).Error
+	err = global.GVA_DB.Delete(&Users.Users{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteUsersByIds 批量删除用户列表记录
 // Author [yourname](https://github.com/yourname)
 func (usersService *UsersService) DeleteUsersByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&[]Users.Users{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Delete(&[]Users.Users{}, "id in ?", IDs).Error
 	return err
 }
 

@@ -28,7 +28,7 @@ func (s *PublicChainRouter) InitPublicChainRouter(Router *gin.RouterGroup, Publi
 
 	PCMobileRouter := PublicRouter.Group("PCMobile")
 	{
-		PCMobileRouter.GET("getPublicChainList", PCApi.GetPublicChainList)
+		PCMobileRouter.GET("getPublicChainList", PCApi.GetPublicChainListMobile)
 		// PCMobilePriRouter := PCMobileRouter.Use(middleware.MoblileJWTAuth())
 		// {
 		// }

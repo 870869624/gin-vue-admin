@@ -38,10 +38,6 @@
             —
             <el-date-picker v-model="searchInfo.endAirdropEndtime" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startAirdropEndtime ? time.getTime() < searchInfo.startAirdropEndtime.getTime() : false"></el-date-picker>
         </el-form-item>
-        <el-form-item label="提交者用户id" prop="userId">
-            
-             <el-input v-model.number="searchInfo.userId" placeholder="搜索条件" />
-        </el-form-item>
            <el-form-item label="公链id" prop="publicChainId">
             <el-select v-model="searchInfo.publicChainId" clearable placeholder="请选择" @clear="()=>{searchInfo.publicChainId=undefined}">
               <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
@@ -120,7 +116,6 @@
          <el-table-column align="left" label="空投项目结束日期" prop="airdropEndtime" width="180">
             <template #default="scope">{{ formatDate(scope.row.airdropEndtime) }}</template>
          </el-table-column>
-          <el-table-column align="left" label="提交者用户id" prop="userId" width="120" />
         <el-table-column align="left" label="公链id" prop="publicChainId" width="120">
             <template #default="scope">
             {{ filterDict(scope.row.publicChainId,PublicChainOptions) }}
@@ -132,7 +127,16 @@
         <el-table-column align="left" label="是否展示" prop="airdropIsShow" width="120">
             <template #default="scope">{{ formatBoolean(scope.row.airdropIsShow) }}</template>
         </el-table-column>
-          <el-table-column align="left" label="空投项目网址" prop="airdropUrl" width="120" />
+          <el-table-column align="left" label="空有项目网址" prop="airdropUrl" width="120" />
+          <el-table-column align="left" label="简介" prop="brief" width="120" />
+                      <el-table-column label="详情描述" prop="detail" width="200">
+                         <template #default="scope">
+                            [富文本内容]
+                         </template>
+                      </el-table-column>
+          <el-table-column align="left" label="x链接" prop="xLink" width="120" />
+          <el-table-column align="left" label="TG链接" prop="tgLink" width="120" />
+          <el-table-column align="left" label="discord链接" prop="discordLink" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -180,9 +184,6 @@
             <el-form-item label="空投项目结束日期:"  prop="airdropEndtime" >
               <el-date-picker v-model="formData.airdropEndtime" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="提交者用户id:"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入提交者用户id" />
-            </el-form-item>
             <el-form-item label="公链id:"  prop="publicChainId" >
               <el-select v-model="formData.publicChainId" placeholder="请选择公链id" style="width:100%" :clearable="true" >
                 <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
@@ -194,8 +195,23 @@
             <el-form-item label="是否展示:"  prop="airdropIsShow" >
               <el-switch v-model="formData.airdropIsShow" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
-            <el-form-item label="空投项目网址:"  prop="airdropUrl" >
-              <el-input v-model="formData.airdropUrl" :clearable="true"  placeholder="请输入投项目网址" />
+            <el-form-item label="空有项目网址:"  prop="airdropUrl" >
+              <el-input v-model="formData.airdropUrl" :clearable="true"  placeholder="请输入空有项目网址" />
+            </el-form-item>
+            <el-form-item label="简介:"  prop="brief" >
+              <el-input v-model="formData.brief" :clearable="true"  placeholder="请输入简介" />
+            </el-form-item>
+            <el-form-item label="详情描述:"  prop="detail" >
+              <RichEdit v-model="formData.detail"/>
+            </el-form-item>
+            <el-form-item label="x链接:"  prop="xLink" >
+              <el-input v-model="formData.xLink" :clearable="true"  placeholder="请输入x链接" />
+            </el-form-item>
+            <el-form-item label="TG链接:"  prop="tgLink" >
+              <el-input v-model="formData.tgLink" :clearable="true"  placeholder="请输入TG链接" />
+            </el-form-item>
+            <el-form-item label="discord链接:"  prop="discordLink" >
+              <el-input v-model="formData.discordLink" :clearable="true"  placeholder="请输入discord链接" />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -214,9 +230,6 @@
                     <el-descriptions-item label="空投项目结束日期">
                         {{ detailFrom.airdropEndtime }}
                     </el-descriptions-item>
-                    <el-descriptions-item label="提交者用户id">
-                        {{ detailFrom.userId }}
-                    </el-descriptions-item>
                     <el-descriptions-item label="公链id">
                         {{ detailFrom.publicChainId }}
                     </el-descriptions-item>
@@ -226,8 +239,23 @@
                     <el-descriptions-item label="是否展示">
                         {{ detailFrom.airdropIsShow }}
                     </el-descriptions-item>
-                    <el-descriptions-item label="投项目网址">
+                    <el-descriptions-item label="空有项目网址">
                         {{ detailFrom.airdropUrl }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="简介">
+                        {{ detailFrom.brief }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="详情描述">
+                        {{ detailFrom.detail }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="x链接">
+                        {{ detailFrom.xLink }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="TG链接">
+                        {{ detailFrom.tgLink }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="discord链接">
+                        {{ detailFrom.discordLink }}
                     </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -247,6 +275,8 @@ import {
 import { getUrl } from '@/utils/image'
 // 图片选择组件
 import SelectImage from '@/components/selectImage/selectImage.vue'
+// 富文本组件
+import RichEdit from '@/components/richtext/rich-edit.vue'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
@@ -278,11 +308,15 @@ const formData = ref({
             airdropPicture: "",
             airdropValue: 0,
             airdropEndtime: new Date(),
-            userId: undefined,
             publicChainId: '',
             airdropIsPass: false,
             airdropIsShow: false,
             airdropUrl: '',
+            brief: '',
+            detail: '',
+            xLink: '',
+            tgLink: '',
+            discordLink: '',
         })
 
 
@@ -533,11 +567,15 @@ const closeDialog = () => {
         airdropPicture: "",
         airdropValue: 0,
         airdropEndtime: new Date(),
-        userId: undefined,
         publicChainId: '',
         airdropIsPass: false,
         airdropIsShow: false,
         airdropUrl: '',
+        brief: '',
+        detail: '',
+        xLink: '',
+        tgLink: '',
+        discordLink: '',
         }
 }
 // 弹窗确定

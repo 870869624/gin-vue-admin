@@ -18,14 +18,14 @@ func (airdropService *AirdropService) CreateAirdrop(airdrop *Airdrop.Airdrop) (e
 // DeleteAirdrop 删除空投项目记录
 // Author [yourname](https://github.com/yourname)
 func (airdropService *AirdropService) DeleteAirdrop(ID string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&Airdrop.Airdrop{}, "id = ?", ID).Error
+	err = global.GVA_DB.Delete(&Airdrop.Airdrop{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteAirdropByIds 批量删除空投项目记录
 // Author [yourname](https://github.com/yourname)
 func (airdropService *AirdropService) DeleteAirdropByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&[]Airdrop.Airdrop{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Delete(&[]Airdrop.Airdrop{}, "id in ?", IDs).Error
 	return err
 }
 
@@ -64,9 +64,6 @@ func (airdropService *AirdropService) GetAirdropInfoList(info AirdropReq.Airdrop
 	if info.StartAirdropEndtime != nil && info.EndAirdropEndtime != nil {
 		db = db.Where("airdrop_endtime BETWEEN ? AND ? ", info.StartAirdropEndtime, info.EndAirdropEndtime)
 	}
-	if info.UserId != nil {
-		db = db.Where("user_id = ?", *info.UserId)
-	}
 	if info.PublicChainId != nil && *info.PublicChainId != "" {
 		db = db.Where("public_chain_id = ?", *info.PublicChainId)
 	}
@@ -98,7 +95,7 @@ func (airdropService *AirdropService) MobileGetAirdropInfoList(info AirdropReq.A
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Table(Airdrop.Airdrop.TableName(Airdrop.Airdrop{}) + " a").
-		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.user_id")
+		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.brief,a.detail,a.x_link,a.tg_link,a.discord_link")
 	var airdrops []Airdrop.MobileAirdropResp
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
@@ -112,9 +109,6 @@ func (airdropService *AirdropService) MobileGetAirdropInfoList(info AirdropReq.A
 	}
 	if info.StartAirdropEndtime != nil && info.EndAirdropEndtime != nil {
 		db = db.Where("a.airdrop_endtime BETWEEN ? AND ? ", info.StartAirdropEndtime, info.EndAirdropEndtime)
-	}
-	if info.UserId != nil {
-		db = db.Where("a.user_id = ?", *info.UserId)
 	}
 	if info.PublicChainId != nil && *info.PublicChainId != "" {
 		db = db.Where("a.public_chain_id = ?", *info.PublicChainId)
@@ -144,4 +138,16 @@ func (airdropService *AirdropService) CreateAirdropMobile(airdrop1 *Airdrop.Mobi
 	airdrop.ToArgs(airdrop1)
 	err = global.GVA_DB.Where(airdrop.TableName()).Create(airdrop).Error
 	return err
+}
+
+func (airdropService *AirdropService) GetAirdropMobile(ID string) (airdrop Airdrop.MobileAirdropResp, err error) {
+
+	db := global.GVA_DB.Table(Airdrop.Airdrop.TableName(Airdrop.Airdrop{}) + " a").
+		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.brief,a.detail,a.x_link,a.tg_link,a.discord_link")
+	var airdrops Airdrop.MobileAirdropResp
+
+	db.Joins("LEFT JOIN candies_public_chain cpc ON a.public_chain_id = cpc.id").Where("a.id = ?", ID)
+
+	err = db.First(&airdrops).Error
+	return airdrops, err
 }

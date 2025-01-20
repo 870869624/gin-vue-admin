@@ -166,3 +166,24 @@ func (platformApi *PlatformApi) GetPlatformPublic(c *gin.Context) {
 		"info": "不需要鉴权的平台接口信息",
 	}, "获取成功", c)
 }
+
+func (platformApi *PlatformApi) GetPlatformListMobile(c *gin.Context) {
+	var pageInfo PlatformV1Req.PlatformSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	list, total, err := platformService.GetPlatformInfoListMobile(pageInfo)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
+	}, "获取成功", c)
+}

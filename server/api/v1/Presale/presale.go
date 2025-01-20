@@ -249,3 +249,14 @@ func (presaleApi *PresaleApi) GetPresaleListMobile(c *gin.Context) {
 		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
 }
+
+func (presaleApi *PresaleApi) FindPresaleMobile(c *gin.Context) {
+	ID := c.Query("ID")
+	represale, err := presaleService.GetPresaleMobile(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithData(represale, c)
+}

@@ -18,14 +18,14 @@ func (presaleService *PresaleService) CreatePresale(presale *Presale.Presale) (e
 // DeletePresale 删除预售项目记录
 // Author [yourname](https://github.com/yourname)
 func (presaleService *PresaleService) DeletePresale(ID string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&Presale.Presale{}, "id = ?", ID).Error
+	err = global.GVA_DB.Delete(&Presale.Presale{}, "id = ?", ID).Error
 	return err
 }
 
 // DeletePresaleByIds 批量删除预售项目记录
 // Author [yourname](https://github.com/yourname)
 func (presaleService *PresaleService) DeletePresaleByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&[]Presale.Presale{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Delete(&[]Presale.Presale{}, "id in ?", IDs).Error
 	return err
 }
 
@@ -61,9 +61,6 @@ func (presaleService *PresaleService) GetPresaleInfoList(info PresaleReq.Presale
 	if info.StartPresaleStartTime != nil && info.EndPresaleStartTime != nil {
 		db = db.Where("presale_start_time BETWEEN ? AND ? ", info.StartPresaleStartTime, info.EndPresaleStartTime)
 	}
-	if info.UserId != nil {
-		db = db.Where("user_id = ?", *info.UserId)
-	}
 	if info.PresaleIsPass != nil {
 		db = db.Where("presale_is_pass = ?", *info.PresaleIsPass)
 	}
@@ -95,7 +92,7 @@ func (presaleService *PresaleService) MobileGetPresaleInfoList(info PresaleReq.P
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Table(Presale.Presale.TableName(Presale.Presale{}) + " p").
-		Select("p.id,p.created_at,p.updated_at,p.presale_is_pass,p.presale_is_show,p.presale_name,p.presale_picture,p.presaleurl,p.public_chain_id,p.presale_start_time,p.user_id,cpc.logo,cpc.name,cpc.picture")
+		Select("p.id,p.created_at,p.updated_at,p.presale_is_pass,p.presale_is_show,p.presale_name,p.presale_picture,p.presaleurl,p.public_chain_id,p.presale_start_time,cpc.logo,cpc.name,cpc.picture,p.brief,p.detail,p.x_link,p.tg_link,p.discord_link")
 	var presales []Presale.MobilePresale
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
@@ -106,9 +103,6 @@ func (presaleService *PresaleService) MobileGetPresaleInfoList(info PresaleReq.P
 	}
 	if info.StartPresaleStartTime != nil && info.EndPresaleStartTime != nil {
 		db = db.Where("p.presale_start_time BETWEEN ? AND ? ", info.StartPresaleStartTime, info.EndPresaleStartTime)
-	}
-	if info.UserId != nil {
-		db = db.Where("p.user_id = ?", *info.UserId)
 	}
 	if info.PresaleIsPass != nil {
 		db = db.Where("p.presale_is_pass = ?", *info.PresaleIsPass)
@@ -137,4 +131,14 @@ func (presaleService *PresaleService) CreatePresaleMobile(presale1 *Presale.Mobi
 	presale.ToArgs(presale1)
 	err = global.GVA_DB.Where(presale.TableName()).Create(presale).Error
 	return err
+}
+
+func (presaleService *PresaleService) GetPresaleMobile(ID string) (presale Presale.MobilePresale, err error) {
+
+	db := global.GVA_DB.Table(Presale.Presale.TableName(Presale.Presale{}) + " p").
+		Select("p.id,p.created_at,p.updated_at,p.presale_is_pass,p.presale_is_show,p.presale_name,p.presale_picture,p.presaleurl,p.public_chain_id,p.presale_start_time,cpc.logo,cpc.name,cpc.picture,p.brief,p.detail,p.x_link,p.tg_link,p.discord_link")
+	var presales Presale.MobilePresale
+	db.Joins("left join candies_public_chain cpc on p.public_chain_id = cpc.id").Where("p.id = ?", ID)
+	err = db.First(&presales).Error
+	return presales, err
 }

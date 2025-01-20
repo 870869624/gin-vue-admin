@@ -6,6 +6,6 @@ type ApiGroup struct{ VoteApi }
 
 var (
 	usersService      = service.ServiceGroupApp.UsersServiceGroup.UsersService
-	voteService       = service.ServiceGroupApp.VoteServiceGroup.VoteService
 	voteRecordService = service.ServiceGroupApp.VoteRecordServiceGroup.VoteRecordService
+	voteService       = service.ServiceGroupApp.VoteServiceGroup.VoteService
 )

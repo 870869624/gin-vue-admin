@@ -98,7 +98,6 @@
                 <el-image preview-teleported style="width: 100px; height: 100px" :src="getUrl(scope.row.votePicture)" fit="cover"/>
               </template>
           </el-table-column>
-          <el-table-column align="left" label="提交者id" prop="userId" width="120" />
         <el-table-column align="left" label="投票是否通过审核" prop="voteIsPass" width="120">
             <template #default="scope">{{ formatBoolean(scope.row.voteIsPass) }}</template>
         </el-table-column>
@@ -112,6 +111,15 @@
         </el-table-column>
           <el-table-column align="left" label="投票总数" prop="voteNum" width="120" />
           <el-table-column align="left" label="投票项目链接" prop="voteUrl" width="120" />
+          <el-table-column align="left" label="简介" prop="brief" width="120" />
+                      <el-table-column label="详情描述" prop="detail" width="200">
+                         <template #default="scope">
+                            [富文本内容]
+                         </template>
+                      </el-table-column>
+          <el-table-column align="left" label="x链接" prop="xLink" width="120" />
+          <el-table-column align="left" label="tg链接" prop="tgLink" width="120" />
+          <el-table-column align="left" label="discord链接" prop="discordLink" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -153,9 +161,6 @@
                  file-type="image"
                 />
             </el-form-item>
-            <el-form-item label="提交者id:"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入提交者id" />
-            </el-form-item>
             <el-form-item label="投票是否通过审核:"  prop="voteIsPass" >
               <el-switch v-model="formData.voteIsPass" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
@@ -173,6 +178,21 @@
             <el-form-item label="投票项目链接:"  prop="voteUrl" >
               <el-input v-model="formData.voteUrl" :clearable="true"  placeholder="请输入投票项目链接" />
             </el-form-item>
+            <el-form-item label="简介:"  prop="brief" >
+              <el-input v-model="formData.brief" :clearable="true"  placeholder="请输入简介" />
+            </el-form-item>
+            <el-form-item label="详情描述:"  prop="detail" >
+              <RichEdit v-model="formData.detail"/>
+            </el-form-item>
+            <el-form-item label="x链接:"  prop="xLink" >
+              <el-input v-model="formData.xLink" :clearable="true"  placeholder="请输入x链接" />
+            </el-form-item>
+            <el-form-item label="tg链接:"  prop="tgLink" >
+              <el-input v-model="formData.tgLink" :clearable="true"  placeholder="请输入tg链接" />
+            </el-form-item>
+            <el-form-item label="discord链接:"  prop="discordLink" >
+              <el-input v-model="formData.discordLink" :clearable="true"  placeholder="请输入discord链接" />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -183,9 +203,6 @@
                     </el-descriptions-item>
                     <el-descriptions-item label="投票项目图片">
                             <el-image style="width: 50px; height: 50px" :preview-src-list="returnArrImg(detailFrom.votePicture)" :src="getUrl(detailFrom.votePicture)" fit="cover" />
-                    </el-descriptions-item>
-                    <el-descriptions-item label="提交者id">
-                        {{ detailFrom.userId }}
                     </el-descriptions-item>
                     <el-descriptions-item label="投票是否通过审核">
                         {{ detailFrom.voteIsPass }}
@@ -201,6 +218,21 @@
                     </el-descriptions-item>
                     <el-descriptions-item label="投票项目链接">
                         {{ detailFrom.voteUrl }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="简介">
+                        {{ detailFrom.brief }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="详情描述">
+                        {{ detailFrom.detail }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="x链接">
+                        {{ detailFrom.xLink }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="tg链接">
+                        {{ detailFrom.tgLink }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="discord链接">
+                        {{ detailFrom.discordLink }}
                     </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -220,6 +252,8 @@ import {
 import { getUrl } from '@/utils/image'
 // 图片选择组件
 import SelectImage from '@/components/selectImage/selectImage.vue'
+// 富文本组件
+import RichEdit from '@/components/richtext/rich-edit.vue'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
@@ -249,12 +283,16 @@ const PublicChainOptions = ref([])
 const formData = ref({
             voteName: '',
             votePicture: "",
-            userId: undefined,
             voteIsPass: false,
             voteIsShow: false,
             publicChainId: '',
             voteNum: undefined,
             voteUrl: '',
+            brief: '',
+            detail: '',
+            xLink: '',
+            tgLink: '',
+            discordLink: '',
         })
 
 
@@ -469,12 +507,16 @@ const closeDialog = () => {
     formData.value = {
         voteName: '',
         votePicture: "",
-        userId: undefined,
         voteIsPass: false,
         voteIsShow: false,
         publicChainId: '',
         voteNum: undefined,
         voteUrl: '',
+        brief: '',
+        detail: '',
+        xLink: '',
+        tgLink: '',
+        discordLink: '',
         }
 }
 // 弹窗确定

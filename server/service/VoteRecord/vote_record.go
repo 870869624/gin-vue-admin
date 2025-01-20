@@ -18,14 +18,14 @@ func (voteRecordService *VoteRecordService) CreateVoteRecord(voteRecord *VoteRec
 // DeleteVoteRecord 删除投票记录记录
 // Author [yourname](https://github.com/yourname)
 func (voteRecordService *VoteRecordService) DeleteVoteRecord(ID string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&VoteRecord.VoteRecord{}, "id = ?", ID).Error
+	err = global.GVA_DB.Delete(&VoteRecord.VoteRecord{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteVoteRecordByIds 批量删除投票记录记录
 // Author [yourname](https://github.com/yourname)
 func (voteRecordService *VoteRecordService) DeleteVoteRecordByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&[]VoteRecord.VoteRecord{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Delete(&[]VoteRecord.VoteRecord{}, "id in ?", IDs).Error
 	return err
 }
 
@@ -93,29 +93,29 @@ func (voteRecordService *VoteRecordService) MobileCountMyVoteRecord(ID string) (
 
 type Resp struct {
 	Ranking      int    `json:"ranking" gorm:"column:ranking"`
-	TotalVotes   int    `json:"total_votes" gorm:"column:total_votes"`
-	VoteId       string `json:"vote_id" gorm:"column:vote_id"`
+	TotalVotes   int    `json:"total_votes" gorm:"column:vote_num"`
+	VoteId       string `json:"vote_id" gorm:"column:id"`
 	MyVoteRecord int64  `json:"my_vote_record" gorm:"column:my_vote_record"`
 }
 
 func (voteRecordService *VoteRecordService) MobileCountAllVoteRecord(ID string) (*Resp, error) {
 	var res Resp
-	sql := "SELECT vote_id, total_votes, ranking " +
-		"FROM(" +
-		"SELECT vote_id, total_votes," +
-		"@rank := @rank + 1 AS ranking " +
-		"FROM(" +
-		"SELECT vote_id, COUNT(user_id) AS total_votes " +
-		"FROM candy_vote_record " +
-		"GROUP BY vote_id " +
-		"ORDER BY total_votes DESC " +
-		")AS SubQuery, " +
-		"(SELECT @rank := 0) AS Init " +
-		")AS OuterQuery " +
-		"WHERE vote_id =  " + ID
+	var res1 []Resp
+	sql := "SELECT id, vote_num, RANK() OVER (ORDER BY vote_num DESC) AS ranking FROM candy_vote"
 
-	if err := global.GVA_DB.Debug().Raw(sql).Scan(&res).Error; err != nil {
+	if err := global.GVA_DB.Debug().Raw(sql).Scan(&res1).Error; err != nil {
 		return nil, err
+	}
+
+	for _, v := range res1 {
+		if v.VoteId == ID {
+			res := Resp{
+				Ranking:    v.Ranking,
+				TotalVotes: v.TotalVotes,
+				VoteId:     v.VoteId,
+			}
+			return &res, nil
+		}
 	}
 	return &res, nil
 }

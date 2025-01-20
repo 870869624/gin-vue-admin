@@ -18,14 +18,14 @@ func (IRService *InvitationRecordService) CreateInvitationRecord(IR *InvitationR
 // DeleteInvitationRecord 删除邀请记录记录
 // Author [yourname](https://github.com/yourname)
 func (IRService *InvitationRecordService) DeleteInvitationRecord(ID string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&InvitationRecord.InvitationRecord{}, "id = ?", ID).Error
+	err = global.GVA_DB.Delete(&InvitationRecord.InvitationRecord{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteInvitationRecordByIds 批量删除邀请记录记录
 // Author [yourname](https://github.com/yourname)
 func (IRService *InvitationRecordService) DeleteInvitationRecordByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&[]InvitationRecord.InvitationRecord{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Delete(&[]InvitationRecord.InvitationRecord{}, "id in ?", IDs).Error
 	return err
 }
 

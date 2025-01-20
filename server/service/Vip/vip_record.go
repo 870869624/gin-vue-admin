@@ -18,14 +18,14 @@ func (vipRecordService *VipRecordService) CreateVipRecord(vipRecord *Vip.VipReco
 // DeleteVipRecord 删除会员记录记录
 // Author [yourname](https://github.com/yourname)
 func (vipRecordService *VipRecordService) DeleteVipRecord(ID string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&Vip.VipRecord{}, "id = ?", ID).Error
+	err = global.GVA_DB.Delete(&Vip.VipRecord{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteVipRecordByIds 批量删除会员记录记录
 // Author [yourname](https://github.com/yourname)
 func (vipRecordService *VipRecordService) DeleteVipRecordByIds(IDs []string) (err error) {
-	err = global.GVA_DB.Unscoped().Delete(&[]Vip.VipRecord{}, "id in ?", IDs).Error
+	err = global.GVA_DB.Delete(&[]Vip.VipRecord{}, "id in ?", IDs).Error
 	return err
 }
 

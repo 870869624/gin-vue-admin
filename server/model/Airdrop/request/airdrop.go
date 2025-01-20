@@ -13,7 +13,6 @@ type AirdropSearch struct{
     AirdropValue  *float64 `json:"airdropValue" form:"airdropValue" `
     StartAirdropEndtime  *time.Time  `json:"startAirdropEndtime" form:"startAirdropEndtime"`
     EndAirdropEndtime  *time.Time  `json:"endAirdropEndtime" form:"endAirdropEndtime"`
-    UserId  *int `json:"userId" form:"userId" `
     PublicChainId  *string `json:"publicChainId" form:"publicChainId" `
     AirdropIsPass  *bool `json:"airdropIsPass" form:"airdropIsPass" `
     AirdropIsShow  *bool `json:"airdropIsShow" form:"airdropIsShow" `
