@@ -14,11 +14,12 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Vip"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Vote"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/VoteRecord"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/describe"
 )
 
 func bizModel() error {
 	db := global.GVA_DB
-	err := db.AutoMigrate(PublicChain.PublicChain{}, InvitationRecord.InvitationRecord{}, VoteRecord.VoteRecord{}, Information.Information{}, PlatformV1.Platform{}, Vip.VipRecord{}, Users.Users{}, Airdrop.Airdrop{}, Vote.Vote{}, Presale.Presale{}, NavigationBar.NavigationBar{}, NavigationProject.NavigationProject{})
+	err := db.AutoMigrate(PublicChain.PublicChain{}, InvitationRecord.InvitationRecord{}, VoteRecord.VoteRecord{}, Information.Information{}, PlatformV1.Platform{}, Vip.VipRecord{}, Users.Users{}, Airdrop.Airdrop{}, Vote.Vote{}, Presale.Presale{}, NavigationBar.NavigationBar{}, NavigationProject.NavigationProject{}, describe.Describe{})
 	if err != nil {
 		return err
 	}

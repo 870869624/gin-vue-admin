@@ -13,6 +13,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service/Vip"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/Vote"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/VoteRecord"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/describe"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/platform"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
@@ -36,4 +37,5 @@ type ServiceGroup struct {
 	VipServiceGroup               Vip.ServiceGroup
 	NavigationBarServiceGroup     NavigationBar.ServiceGroup
 	NavigationProjectServiceGroup NavigationProject.ServiceGroup
+	DescribeServiceGroup          describe.ServiceGroup
 }

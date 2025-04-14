@@ -13,6 +13,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/router/Vip"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/Vote"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/VoteRecord"
+	"github.com/flipped-aurora/gin-vue-admin/server/router/describe"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/platform"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/system"
@@ -36,4 +37,5 @@ type RouterGroup struct {
 	Vip               Vip.RouterGroup
 	NavigationBar     NavigationBar.RouterGroup
 	NavigationProject NavigationProject.RouterGroup
+	Describe          describe.RouterGroup
 }

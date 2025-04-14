@@ -134,7 +134,7 @@ mysql:
     db-name: candies
     username: candies
     password: "123456"
-    path: 59.110.161.193
+    path: 54.251.168.156
     engine: ""
     log-mode: error
     max-idle-conns: 10

@@ -97,7 +97,7 @@ func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, 
 	}
 	s := strings.Split(header.Filename, ".")
 	f := example.ExaFileUploadAndDownload{
-		Url:  fmt.Sprintf("http://59.110.161.193:80/%s", filePath),
+		Url:  fmt.Sprintf("http://54.251.168.156:150/%s", filePath),
 		Name: header.Filename,
 		Tag:  s[len(s)-1],
 		Key:  key,
