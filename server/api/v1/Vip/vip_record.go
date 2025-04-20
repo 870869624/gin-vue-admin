@@ -162,12 +162,25 @@ func (vipRecordApi *VipRecordApi) GetVipRecordList(c *gin.Context) {
 // @Success 200 {object} response.Response{data=object,msg=string} "获取成功"
 // @Router /vipRecord/getVipRecordPublic [get]
 func (vipRecordApi *VipRecordApi) GetVipRecordPublic(c *gin.Context) {
-	// 此接口不需要鉴权
-	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
-	vipRecordService.GetVipRecordPublic()
-	response.OkWithDetailed(gin.H{
-		"info": "不需要鉴权的会员记录接口信息",
-	}, "获取成功", c)
+	bab := c.Query("bab")
+
+	uid := utils.GetMobileUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("查询失败:用户ID为空", c)
+		return
+	}
+
+	// userId := int(uid)
+
+	_, err := vipRecordService.GetVipRecordBabMobile(bab)
+	if err == nil {
+		response.OkWithMessage("bab已使用", c)
+		return
+	}
+
+	response.OkWithMessage("bab未使用", c)
+	return
+
 }
 
 func (vipRecordApi *VipRecordApi) CreateVipRecordMobile(c *gin.Context) {

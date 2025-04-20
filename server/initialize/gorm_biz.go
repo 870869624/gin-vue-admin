@@ -19,7 +19,7 @@ import (
 
 func bizModel() error {
 	db := global.GVA_DB
-	err := db.AutoMigrate(PublicChain.PublicChain{}, InvitationRecord.InvitationRecord{}, VoteRecord.VoteRecord{}, Information.Information{}, PlatformV1.Platform{}, Vip.VipRecord{}, Users.Users{}, Airdrop.Airdrop{}, Vote.Vote{}, Presale.Presale{}, NavigationBar.NavigationBar{}, NavigationProject.NavigationProject{}, describe.Describe{})
+	err := db.AutoMigrate(PublicChain.PublicChain{}, VoteRecord.VoteRecord{}, Information.Information{}, PlatformV1.Platform{}, Vip.VipRecord{}, Users.Users{}, Airdrop.Airdrop{}, Vote.Vote{}, Presale.Presale{}, NavigationBar.NavigationBar{}, NavigationProject.NavigationProject{}, describe.Describe{}, InvitationRecord.InvitationRecord{})
 	if err != nil {
 		return err
 	}

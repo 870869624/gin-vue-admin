@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/InvitationRecord"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Users"
 	UsersReq "github.com/flipped-aurora/gin-vue-admin/server/model/Users/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Vip"
@@ -83,7 +84,7 @@ func (usersService *UsersService) GetUsersPublic() {
 	// 请自行实现
 }
 
-func (usersService *UsersService) Login(u *Users.Users) (userInter *Users.Users, err error) {
+func (usersService *UsersService) Login(u *Users.Users, l *UsersReq.Login) (userInter *Users.Users, err error) {
 	if nil == global.GVA_DB {
 		return nil, fmt.Errorf("db not init")
 	}
@@ -205,6 +206,19 @@ func (usersService *UsersService) Login(u *Users.Users) (userInter *Users.Users,
 				global.GVA_LOG.Error("注册失败!", zap.Error(err))
 				return
 			}
+
+			IR := &InvitationRecord.InvitationRecord{
+				InviteCode: &l.InviteCode,
+			}
+			if err := IR.GetByCode(); err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return nil, errors.New("邀请码错误")
+				}
+				return nil, err
+			} else {
+				global.GVA_DB.Table(IR.TableName()).Where("invite_code = ?", l.InviteCode).Update("new_user_id", user.ID)
+			}
+
 			return user, nil
 		}
 		return &user, err

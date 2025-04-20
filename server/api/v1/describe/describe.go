@@ -1,18 +1,15 @@
 package describe
 
 import (
-	
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/describe"
-    describeReq "github.com/flipped-aurora/gin-vue-admin/server/model/describe/request"
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/describe"
+	describeReq "github.com/flipped-aurora/gin-vue-admin/server/model/describe/request"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
-type DescribeApi struct {}
-
-
+type DescribeApi struct{}
 
 // CreateDescribe 创建文档说明
 // @Tags Describe
@@ -32,11 +29,11 @@ func (DApi *DescribeApi) CreateDescribe(c *gin.Context) {
 	}
 	err = DService.CreateDescribe(&D)
 	if err != nil {
-        global.GVA_LOG.Error("创建失败!", zap.Error(err))
-		response.FailWithMessage("创建失败:" + err.Error(), c)
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		response.FailWithMessage("创建失败:"+err.Error(), c)
 		return
 	}
-    response.OkWithMessage("创建成功", c)
+	response.OkWithMessage("创建成功", c)
 }
 
 // DeleteDescribe 删除文档说明
@@ -52,8 +49,8 @@ func (DApi *DescribeApi) DeleteDescribe(c *gin.Context) {
 	ID := c.Query("ID")
 	err := DService.DeleteDescribe(ID)
 	if err != nil {
-        global.GVA_LOG.Error("删除失败!", zap.Error(err))
-		response.FailWithMessage("删除失败:" + err.Error(), c)
+		global.GVA_LOG.Error("删除失败!", zap.Error(err))
+		response.FailWithMessage("删除失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithMessage("删除成功", c)
@@ -71,8 +68,8 @@ func (DApi *DescribeApi) DeleteDescribeByIds(c *gin.Context) {
 	IDs := c.QueryArray("IDs[]")
 	err := DService.DeleteDescribeByIds(IDs)
 	if err != nil {
-        global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
-		response.FailWithMessage("批量删除失败:" + err.Error(), c)
+		global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
+		response.FailWithMessage("批量删除失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithMessage("批量删除成功", c)
@@ -96,8 +93,8 @@ func (DApi *DescribeApi) UpdateDescribe(c *gin.Context) {
 	}
 	err = DService.UpdateDescribe(D)
 	if err != nil {
-        global.GVA_LOG.Error("更新失败!", zap.Error(err))
-		response.FailWithMessage("更新失败:" + err.Error(), c)
+		global.GVA_LOG.Error("更新失败!", zap.Error(err))
+		response.FailWithMessage("更新失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithMessage("更新成功", c)
@@ -116,8 +113,8 @@ func (DApi *DescribeApi) FindDescribe(c *gin.Context) {
 	ID := c.Query("ID")
 	reD, err := DService.GetDescribe(ID)
 	if err != nil {
-        global.GVA_LOG.Error("查询失败!", zap.Error(err))
-		response.FailWithMessage("查询失败:" + err.Error(), c)
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
 		return
 	}
 	response.OkWithData(reD, c)
@@ -141,16 +138,16 @@ func (DApi *DescribeApi) GetDescribeList(c *gin.Context) {
 	}
 	list, total, err := DService.GetDescribeInfoList(pageInfo)
 	if err != nil {
-	    global.GVA_LOG.Error("获取失败!", zap.Error(err))
-        response.FailWithMessage("获取失败:" + err.Error(), c)
-        return
-    }
-    response.OkWithDetailed(response.PageResult{
-        List:     list,
-        Total:    total,
-        Page:     pageInfo.Page,
-        PageSize: pageInfo.PageSize,
-    }, "获取成功", c)
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
+	}, "获取成功", c)
 }
 
 // GetDescribePublic 不需要鉴权的文档说明接口
@@ -162,10 +159,12 @@ func (DApi *DescribeApi) GetDescribeList(c *gin.Context) {
 // @Success 200 {object} response.Response{data=object,msg=string} "获取成功"
 // @Router /D/getDescribePublic [get]
 func (DApi *DescribeApi) GetDescribePublic(c *gin.Context) {
-    // 此接口不需要鉴权
-    // 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
-    DService.GetDescribePublic()
-    response.OkWithDetailed(gin.H{
-       "info": "不需要鉴权的文档说明接口信息",
-    }, "获取成功", c)
+	ID := c.Query("ID")
+	reD, err := DService.GetDescribe(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithData(reD, c)
 }

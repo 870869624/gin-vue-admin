@@ -12,6 +12,7 @@ type VipRecord struct {
 	IsEffective *bool   `json:"isEffective" form:"isEffective" gorm:"default:false;column:is_effective;comment:是否有效;" binding:"required"` //是否有效
 	BlockHash   *string `json:"blockHash" form:"blockHash" gorm:"column:block_hash;comment:交易hash;" binding:"required"`                   //交易hash
 	BlockNumber *string `json:"blockNumber" form:"blockNumber" gorm:"column:block_number;comment:交易网络数;" binding:"required"`              //交易网络数
+	Bab         *string `json:"bab" form:"bab" gorm:"column:bab;comment:bab;" binding:"required"`
 }
 
 type VipRecordMobile struct {
@@ -20,6 +21,7 @@ type VipRecordMobile struct {
 	IsEffective *bool   `json:"isEffective" form:"isEffective" gorm:"default:false;column:is_effective;comment:是否有效;" binding:"-"` //是否有效
 	BlockHash   *string `json:"blockHash" form:"blockHash" gorm:"column:block_hash;comment:交易hash;" binding:"required"`            //交易hash
 	BlockNumber *string `json:"blockNumber" form:"blockNumber" gorm:"column:block_number;comment:交易网络数;" binding:"required"`       //交易网络数
+	Bab         *string `json:"bab" form:"bab" gorm:"column:bab;comment:bab;" binding:"required"`
 }
 
 // TableName 会员记录 VipRecord自定义表名 candy_vip_record

@@ -18,10 +18,6 @@ func initBizRouter(routers ...*gin.RouterGroup) {
 		PublicChainRouter.InitPublicChainRouter(privateGroup, publicGroup)
 	}
 	{
-		InvitationRecordRouter := router.RouterGroupApp.InvitationRecord
-		InvitationRecordRouter.InitInvitationRecordRouter(privateGroup, publicGroup)
-	}
-	{
 		PlatformV1Router := router.RouterGroupApp.PlatformV1
 		PlatformV1Router.InitPlatformRouter(privateGroup, publicGroup)
 	}
@@ -60,9 +56,13 @@ func initBizRouter(routers ...*gin.RouterGroup) {
 	{
 		NavigationProjectRouter := router.RouterGroupApp.NavigationProject
 		NavigationProjectRouter.InitNavigationProjectRouter(privateGroup, publicGroup)
-	} // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
+	}
 	{
 		describeRouter := router.RouterGroupApp.Describe
 		describeRouter.InitDescribeRouter(privateGroup, publicGroup)
+	} // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
+	{
+		InvitationRecordRouter := router.RouterGroupApp.InvitationRecord
+		InvitationRecordRouter.InitInvitationRecordRouter(privateGroup, publicGroup)
 	}
 }

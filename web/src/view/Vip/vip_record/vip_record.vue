@@ -72,6 +72,7 @@
         </el-table-column>
           <el-table-column align="left" label="交易hash" prop="blockHash" width="120" />
           <el-table-column align="left" label="交易网络数" prop="blockNumber" width="120" />
+          <el-table-column align="left" label="BAB令牌" prop="bab" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -116,6 +117,9 @@
             <el-form-item label="交易网络数:"  prop="blockNumber" >
               <el-input v-model="formData.blockNumber" :clearable="true"  placeholder="请输入交易网络数" />
             </el-form-item>
+            <el-form-item label="BAB令牌:"  prop="bab" >
+              <el-input v-model="formData.bab" :clearable="true"  placeholder="BAB令牌" />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -132,6 +136,9 @@
                     </el-descriptions-item>
                     <el-descriptions-item label="交易网络数">
                         {{ detailFrom.blockNumber }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="BAB令牌">
+                        {{ detailFrom.bab }}
                     </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -178,6 +185,7 @@ const formData = ref({
             isEffective: false,
             blockHash: '',
             blockNumber: '',
+            bab: '',
         })
 
 
@@ -208,6 +216,17 @@ const rule = reactive({
               }
               ],
                blockNumber : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+              bab : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -396,6 +415,7 @@ const closeDialog = () => {
         isEffective: false,
         blockHash: '',
         blockNumber: '',
+        bab: '',
         }
 }
 // 弹窗确定

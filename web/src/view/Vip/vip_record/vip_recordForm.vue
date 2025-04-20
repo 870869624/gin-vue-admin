@@ -15,6 +15,9 @@
         <el-form-item label="交易网络数:" prop="blockNumber">
           <el-input v-model="formData.blockNumber" :clearable="true"  placeholder="请输入交易网络数" />
        </el-form-item>
+       <el-form-item label="BAB令牌:" prop="bab">
+          <el-input v-model="formData.bab" :clearable="true"  placeholder="BAB令牌" />
+       </el-form-item>
         <el-form-item>
           <el-button :loading="btnLoading" type="primary" @click="save">保存</el-button>
           <el-button type="primary" @click="back">返回</el-button>
@@ -54,6 +57,7 @@ const formData = ref({
             isEffective: false,
             blockHash: '',
             blockNumber: '',
+            bab: '',
         })
 // 验证规则
 const rule = reactive({
@@ -73,6 +77,11 @@ const rule = reactive({
                    trigger: ['input','blur'],
                }],
                blockNumber : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               bab : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

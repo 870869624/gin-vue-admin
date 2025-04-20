@@ -84,3 +84,8 @@ func (vipRecordService *VipRecordService) CreateVipRecordMobile(vipRecord *Vip.V
 	err = global.GVA_DB.Model(&Vip.VipRecord{}).Create(vipRecord).Error
 	return err
 }
+
+func (vipRecordService *VipRecordService) GetVipRecordBabMobile(Bab string) (vipRecord Vip.VipRecord, err error) {
+	err = global.GVA_DB.Model(&Vip.VipRecord{}).Where("bab = ?", Bab).First(&vipRecord).Error
+	return
+}

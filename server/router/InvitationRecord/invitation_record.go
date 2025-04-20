@@ -25,8 +25,11 @@ func (s *InvitationRecordRouter) InitInvitationRecordRouter(Router *gin.RouterGr
 	{
 		IRRouterWithoutAuth.GET("getInvitationRecordPublic", IRApi.GetInvitationRecordPublic) // 邀请记录开放接口
 	}
-	IRMobileRouterWithoutAuth := PublicRouter.Group("IRMobile")
+
+	IRMobileRouterWithoutAuth := PublicRouter.Group("vipRecord")
 	{
 		IRMobileRouterWithoutAuth.POST("createInvitationRecord", IRApi.CreateInvitationRecord) // 新建邀请记录
+		IRMobileRouterWithoutAuth.GET("createInvitationLink", IRApi.CreateInvitationRecord)    // 生成邀请链接
+		IRMobileRouterWithoutAuth.POST("checkCode", IRApi.CreateInvitationRecord)              // 检测邀请码
 	}
 }

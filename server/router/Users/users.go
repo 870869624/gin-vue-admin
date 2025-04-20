@@ -28,6 +28,7 @@ func (s *UsersRouter) InitUsersRouter(Router *gin.RouterGroup, PublicRouter *gin
 
 	usersRouterWithoutAuth.POST("login", usersApi.Login)
 	usersRouterWithoutAuth.POST("import/v1", usersApi.Import)
+
 	PrivateGroup := usersRouterWithoutAuth.Use(middleware.MoblileJWTAuth())
 	{
 		PrivateGroup.GET("balance/v1", usersApi.Balance)

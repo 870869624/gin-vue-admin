@@ -15,6 +15,9 @@
         <el-form-item label="被邀请者用户名:" prop="newUsername">
           <el-input v-model="formData.newUsername" :clearable="true"  placeholder="请输入被邀请者用户名" />
        </el-form-item>
+        <el-form-item label="邀请码:" prop="inviteCode">
+          <el-input v-model="formData.inviteCode" :clearable="true"  placeholder="请输入邀请码" />
+       </el-form-item>
         <el-form-item>
           <el-button :loading="btnLoading" type="primary" @click="save">保存</el-button>
           <el-button type="primary" @click="back">返回</el-button>
@@ -54,6 +57,7 @@ const formData = ref({
             username: '',
             newUserId: undefined,
             newUsername: '',
+            inviteCode: '',
         })
 // 验证规则
 const rule = reactive({

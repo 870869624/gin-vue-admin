@@ -70,6 +70,7 @@
           <el-table-column align="left" label="邀请者用户名" prop="username" width="120" />
           <el-table-column align="left" label="被邀请者用户id" prop="newUserId" width="120" />
           <el-table-column align="left" label="被邀请者用户名" prop="newUsername" width="120" />
+          <el-table-column align="left" label="邀请码" prop="inviteCode" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -114,6 +115,9 @@
             <el-form-item label="被邀请者用户名:"  prop="newUsername" >
               <el-input v-model="formData.newUsername" :clearable="true"  placeholder="请输入被邀请者用户名" />
             </el-form-item>
+            <el-form-item label="邀请码:"  prop="inviteCode" >
+              <el-input v-model="formData.inviteCode" :clearable="true"  placeholder="请输入邀请码" />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -130,6 +134,9 @@
                     </el-descriptions-item>
                     <el-descriptions-item label="被邀请者用户名">
                         {{ detailFrom.newUsername }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="邀请码">
+                        {{ detailFrom.inviteCode }}
                     </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -176,6 +183,7 @@ const formData = ref({
             username: '',
             newUserId: undefined,
             newUsername: '',
+            inviteCode: '',
         })
 
 
@@ -391,6 +399,7 @@ const closeDialog = () => {
         username: '',
         newUserId: undefined,
         newUsername: '',
+        inviteCode: '',
         }
 }
 // 弹窗确定

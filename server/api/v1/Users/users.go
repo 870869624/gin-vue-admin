@@ -3,7 +3,6 @@ package Users
 import (
 	"fmt"
 	"math/big"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -182,44 +181,31 @@ func (usersApi *UsersApi) GetUsersPublic(c *gin.Context) {
 func (usersApi *UsersApi) Login(c *gin.Context) {
 	var l UsersReq.Login
 	err := c.ShouldBindJSON(&l)
-	key := c.ClientIP()
 
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	// 判断验证码是否开启
-	openCaptcha := global.GVA_CONFIG.Captcha.OpenCaptcha               // 是否开启防爆次数
-	openCaptchaTimeOut := global.GVA_CONFIG.Captcha.OpenCaptchaTimeOut // 缓存超时时间
-	v, ok := global.BlackCache.Get(key)
-	if !ok {
-		global.BlackCache.Set(key, 1, time.Second*time.Duration(openCaptchaTimeOut))
+	var u Users.Users
+	if l.MetaMask != "" {
+		u = Users.Users{MetaMask: &l.MetaMask, MetaMaskMoney: &l.MetaMaskMoney, Username: &l.Username}
+	} else if l.TokenPocket != "" {
+		u = Users.Users{TokenPocket: &l.TokenPocket, TokenPocketMoney: &l.TokenPocketMoney, Username: &l.Username}
 	}
+	user, err := usersService.Login(&u, &l)
+	if err != nil {
+		global.GVA_LOG.Error("登陆失败! 用户名不存在或者密码错误!", zap.Error(err))
+		// 验证码次数+1
 
-	var oc bool = openCaptcha == 0 || openCaptcha < interfaceToInt(v)
-
-	if !oc || (l.CaptchaId != "" && l.Captcha != "" && store.Verify(l.CaptchaId, l.Captcha, true)) {
-		var u Users.Users
-		if l.MetaMask != "" {
-			u = Users.Users{MetaMask: &l.MetaMask, MetaMaskMoney: &l.MetaMaskMoney, Username: &l.Username}
-		} else if l.TokenPocket != "" {
-			u = Users.Users{TokenPocket: &l.TokenPocket, TokenPocketMoney: &l.TokenPocketMoney, Username: &l.Username}
-		}
-		user, err := usersService.Login(&u)
-		if err != nil {
-			global.GVA_LOG.Error("登陆失败! 用户名不存在或者密码错误!", zap.Error(err))
-			// 验证码次数+1
-			global.BlackCache.Increment(key, 1)
-			response.FailWithMessage("用户名不存在或者密码错误"+err.Error(), c)
-			return
-		}
-		usersApi.TokenNext(c, *user)
+		response.FailWithMessage("用户名不存在或者密码错误"+err.Error(), c)
 		return
 	}
+	usersApi.TokenNext(c, *user)
+	return
+
 	// 验证码次数+1
-	global.BlackCache.Increment(key, 1)
-	response.FailWithMessage("验证码错误", c)
+
 }
 
 // TokenNext 登录以后签发jwt

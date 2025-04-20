@@ -83,3 +83,8 @@ func (IRService *InvitationRecordService) GetInvitationRecordPublic() {
 	// 此方法为获取数据源定义的数据
 	// 请自行实现
 }
+
+func (IRService *InvitationRecordService) GetByCode(IR *InvitationRecord.InvitationRecord) (err error) {
+	err = global.GVA_DB.Where("invite_code = ?", *IR.InviteCode).First(&IR).Error
+	return err
+}
