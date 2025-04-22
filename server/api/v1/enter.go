@@ -13,6 +13,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/Vip"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/Vote"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/VoteRecord"
+	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/bannerPicture"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/describe"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/platform"
@@ -38,4 +39,5 @@ type ApiGroup struct {
 	NavigationBarApiGroup     NavigationBar.ApiGroup
 	NavigationProjectApiGroup NavigationProject.ApiGroup
 	DescribeApiGroup          describe.ApiGroup
+	BannerPictureApiGroup     bannerPicture.ApiGroup
 }

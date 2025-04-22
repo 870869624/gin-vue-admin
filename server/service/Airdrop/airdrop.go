@@ -95,7 +95,7 @@ func (airdropService *AirdropService) MobileGetAirdropInfoList(info AirdropReq.A
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Table(Airdrop.Airdrop.TableName(Airdrop.Airdrop{}) + " a").
-		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.brief,a.detail,a.x_link,a.tg_link,a.discord_link")
+		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.brief,a.detail,a.x_link,a.tg_link,a.discord_link,a.distribution_date")
 	var airdrops []Airdrop.MobileAirdropResp
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
@@ -143,7 +143,7 @@ func (airdropService *AirdropService) CreateAirdropMobile(airdrop1 *Airdrop.Mobi
 func (airdropService *AirdropService) GetAirdropMobile(ID string) (airdrop Airdrop.MobileAirdropResp, err error) {
 
 	db := global.GVA_DB.Table(Airdrop.Airdrop.TableName(Airdrop.Airdrop{}) + " a").
-		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.brief,a.detail,a.x_link,a.tg_link,a.discord_link")
+		Select("a.id,a.created_at,a.updated_at,a.airdrop_endtime,a.airdrop_is_pass,a.airdrop_is_show,a.airdrop_name,a.airdrop_picture,a.airdrop_url,a.airdrop_value,cpc.logo,cpc.name,cpc.picture,a.public_chain_id,a.brief,a.detail,a.x_link,a.tg_link,a.discord_link,a.distribution_date")
 	var airdrops Airdrop.MobileAirdropResp
 
 	db.Joins("LEFT JOIN candies_public_chain cpc ON a.public_chain_id = cpc.id").Where("a.id = ?", ID)

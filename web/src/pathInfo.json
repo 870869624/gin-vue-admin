@@ -24,6 +24,8 @@
   "/src/view/VoteRecord/voteRecord/voteRecord.vue": "VoteRecord",
   "/src/view/VoteRecord/voteRecord/voteRecordForm.vue": "VoteRecordForm",
   "/src/view/about/index.vue": "About",
+  "/src/view/bannerPicture/bannerpicture/bannerpicture.vue": "BannerPicture",
+  "/src/view/bannerPicture/bannerpicture/bannerpictureForm.vue": "BannerPictureForm",
   "/src/view/dashboard/components/banner.vue": "Banner",
   "/src/view/dashboard/components/card.vue": "Card",
   "/src/view/dashboard/components/charts-content-numbers.vue": "ChartsContentNumbers",

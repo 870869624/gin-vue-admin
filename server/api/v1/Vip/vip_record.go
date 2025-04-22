@@ -174,13 +174,11 @@ func (vipRecordApi *VipRecordApi) GetVipRecordPublic(c *gin.Context) {
 
 	_, err := vipRecordService.GetVipRecordBabMobile(bab)
 	if err == nil {
-		response.OkWithMessage("bab已使用", c)
+		response.FailWithMessage("bab已使用", c)
 		return
 	}
 
 	response.OkWithMessage("bab未使用", c)
-	return
-
 }
 
 func (vipRecordApi *VipRecordApi) CreateVipRecordMobile(c *gin.Context) {

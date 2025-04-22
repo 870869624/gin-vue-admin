@@ -20,6 +20,9 @@
         <el-form-item label="空投名称" prop="airdropName">
          <el-input v-model="searchInfo.airdropName" placeholder="搜索条件" />
         </el-form-item>
+        <el-form-item label="空投项目分发日期" prop="distributionDate">
+         <el-input v-model="searchInfo.distributionDate" placeholder="搜索条件" />
+        </el-form-item>
         <el-form-item label="空投项目价值" prop="airdropValue">
             
              <el-input v-model.number="searchInfo.airdropValue" placeholder="搜索条件" />
@@ -38,6 +41,7 @@
             —
             <el-date-picker v-model="searchInfo.endAirdropEndtime" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startAirdropEndtime ? time.getTime() < searchInfo.startAirdropEndtime.getTime() : false"></el-date-picker>
         </el-form-item>
+        
            <el-form-item label="公链id" prop="publicChainId">
             <el-select v-model="searchInfo.publicChainId" clearable placeholder="请选择" @clear="()=>{searchInfo.publicChainId=undefined}">
               <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
@@ -116,6 +120,9 @@
          <el-table-column align="left" label="空投项目结束日期" prop="airdropEndtime" width="180">
             <template #default="scope">{{ formatDate(scope.row.airdropEndtime) }}</template>
          </el-table-column>
+         <el-table-column align="left" label="空投项目分发日期" prop="distributionDate" width="180">
+            <template #default="scope">{{ formatDate(scope.row.distributionDate) }}</template>
+         </el-table-column>
         <el-table-column align="left" label="公链id" prop="publicChainId" width="120">
             <template #default="scope">
             {{ filterDict(scope.row.publicChainId,PublicChainOptions) }}
@@ -184,6 +191,9 @@
             <el-form-item label="空投项目结束日期:"  prop="airdropEndtime" >
               <el-date-picker v-model="formData.airdropEndtime" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
+            <el-form-item label="空投项目分发日期:"  prop="distributionDate" >
+              <el-date-picker v-model="formData.distributionDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
             <el-form-item label="公链id:"  prop="publicChainId" >
               <el-select v-model="formData.publicChainId" placeholder="请选择公链id" style="width:100%" :clearable="true" >
                 <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
@@ -229,6 +239,9 @@
                     </el-descriptions-item>
                     <el-descriptions-item label="空投项目结束日期">
                         {{ detailFrom.airdropEndtime }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="空投项目分发日期">
+                        {{ detailFrom.distributionDate }}
                     </el-descriptions-item>
                     <el-descriptions-item label="公链id">
                         {{ detailFrom.publicChainId }}
@@ -317,6 +330,7 @@ const formData = ref({
             xLink: '',
             tgLink: '',
             discordLink: '',
+            distributionDate: new Date(),
         })
 
 
@@ -347,6 +361,12 @@ const rule = reactive({
                },
               ],
                airdropEndtime : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               distributionDate : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -567,6 +587,7 @@ const closeDialog = () => {
         airdropPicture: "",
         airdropValue: 0,
         airdropEndtime: new Date(),
+        distributionDateL:new Date(),
         publicChainId: '',
         airdropIsPass: false,
         airdropIsShow: false,
@@ -576,6 +597,7 @@ const closeDialog = () => {
         xLink: '',
         tgLink: '',
         discordLink: '',
+
         }
 }
 // 弹窗确定

@@ -1,12 +1,11 @@
 package InvitationRecord
 
 import (
-	"fmt"
-
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/InvitationRecord"
 	InvitationRecordReq "github.com/flipped-aurora/gin-vue-admin/server/model/InvitationRecord/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -24,20 +23,19 @@ type InvitationRecordApi struct{}
 // @Success 200 {object} response.Response{msg=string} "创建成功"
 // @Router /IR/createInvitationRecord [post]
 func (IRApi *InvitationRecordApi) CreateInvitationRecord(c *gin.Context) {
-	// uid := utils.GetMobileUserID(c)
-	// if uid == 0 {
-	// 	response.FailWithMessage("查询失败:用户ID为空", c)
-	// 	return
-	// }
+	uid := utils.GetMobileUserID(c)
+	if uid == 0 {
+		response.FailWithMessage("查询失败:用户ID为空", c)
+		return
+	}
 
-	// userId := int(uid)
-	userId := 5
+	userId := int(uid)
 
 	var IR InvitationRecord.InvitationRecord
 	IR.User_id = &userId
 
 	inviteCode := uuid.New().String()
-	inviteLink := fmt.Sprintf("http://candies.com/register?invite_code=%s&inviter_id=%d", inviteCode, userId)
+
 	IR.InviteCode = &inviteCode
 
 	err := IRService.CreateInvitationRecord(&IR)
@@ -46,7 +44,7 @@ func (IRApi *InvitationRecordApi) CreateInvitationRecord(c *gin.Context) {
 		response.FailWithMessage("创建失败:"+err.Error(), c)
 		return
 	}
-	response.OkWithMessage(inviteLink, c)
+	response.OkWithMessage(inviteCode , c)
 }
 
 // DeleteInvitationRecord 删除邀请记录

@@ -15,6 +15,9 @@
         <el-form-item label="空投项目结束日期:" prop="airdropEndtime">
           <el-date-picker v-model="formData.airdropEndtime" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
+       <el-form-item label="空投项目分发日期:" prop="distributionDate">
+          <el-date-picker v-model="formData.distributionDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
+       </el-form-item>
         <el-form-item label="公链id:" prop="publicChainId">
            <el-select v-model="formData.publicChainId" placeholder="请选择公链id" style="width:100%" :clearable="true" >
               <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
@@ -97,6 +100,7 @@ const formData = ref({
             xLink: '',
             tgLink: '',
             discordLink: '',
+            distributionDate:new Date(),
         })
 // 验证规则
 const rule = reactive({
@@ -116,6 +120,11 @@ const rule = reactive({
                    trigger: ['input','blur'],
                }],
                airdropEndtime : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               distributionDate : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
