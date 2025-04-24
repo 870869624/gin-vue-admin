@@ -1,9 +1,12 @@
 package InvitationRecord
 
 import (
+	"fmt"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/InvitationRecord"
 	InvitationRecordReq "github.com/flipped-aurora/gin-vue-admin/server/model/InvitationRecord/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/Users"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
@@ -44,7 +47,7 @@ func (IRApi *InvitationRecordApi) CreateInvitationRecord(c *gin.Context) {
 		response.FailWithMessage("创建失败:"+err.Error(), c)
 		return
 	}
-	response.OkWithMessage(inviteCode , c)
+	response.OkWithMessage(inviteCode, c)
 }
 
 // DeleteInvitationRecord 删除邀请记录
@@ -192,4 +195,38 @@ func (IRApi *InvitationRecordApi) CreateInvitationCode(c *gin.Context) {
 		return
 	}
 	response.OkWithMessage("创建成功", c)
+}
+
+func (IRApi *InvitationRecordApi) InviteList(c *gin.Context) {
+	// uid := utils.GetMobileUserID(c)
+	// if uid == 0 {
+	// 	response.FailWithMessage("查询失败:用户ID为空", c)
+	// 	return
+	// }
+
+	// userId := int(uid)
+	userId := 1
+	var IR InvitationRecord.InvitationRecord
+	IR.User_id = &userId
+
+	data, err := IRService.GetList(&IR)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败:"+err.Error(), c)
+		return
+	}
+
+	fmt.Println(data)
+	userData := make([]Users.Users, 0)
+	for i := range data {
+		user := &Users.Users{
+			GVA_MODEL: global.GVA_MODEL{ID: uint(*data[i].NewUserId)},
+		}
+		if err := global.GVA_DB.Debug().Table(user.TableName()).Where(user).First(user).Error; err != nil {
+			response.FailWithMessage("用户信息错误"+err.Error(), c)
+			return
+		}
+		userData = append(userData, *user)
+	}
+	response.OkWithData(userData, c)
 }

@@ -88,3 +88,10 @@ func (IRService *InvitationRecordService) GetByCode(IR *InvitationRecord.Invitat
 	err = global.GVA_DB.Where("invite_code = ?", *IR.InviteCode).First(&IR).Error
 	return err
 }
+
+func (IRService *InvitationRecordService) GetList(IR *InvitationRecord.InvitationRecord) ([]InvitationRecord.InvitationRecord, error) {
+	var data []InvitationRecord.InvitationRecord
+	err := global.GVA_DB.Debug().Table(IR.TableName()).Where("user_id = ? and new_user_id != 'null'", *IR.User_id).Find(&data).Error
+
+	return data, err
+}
