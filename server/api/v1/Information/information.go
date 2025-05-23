@@ -5,6 +5,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Information"
 	InformationReq "github.com/flipped-aurora/gin-vue-admin/server/model/Information/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -142,6 +143,16 @@ func (informationApi *InformationApi) GetInformationList(c *gin.Context) {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败:"+err.Error(), c)
 		return
+	}
+
+	for i := range list {
+		dic := system.SysDictionaryDetail{}
+		err = global.GVA_DB.Where("id = ?", list[i].PublicChainId).Find(&dic).Error
+		if err != nil {
+			return
+		}
+
+		*list[i].PublicChainId = dic.Value
 	}
 	response.OkWithDetailed(response.PageResult{
 		List:     list,
