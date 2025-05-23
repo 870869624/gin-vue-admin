@@ -37,11 +37,6 @@
                 </el-option>
             </el-select>
             </el-form-item>
-           <el-form-item label="公链id" prop="publicChainId">
-            <el-select v-model="searchInfo.publicChainId" clearable placeholder="请选择" @clear="()=>{searchInfo.publicChainId=undefined}">
-              <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
-            </el-select>
-            </el-form-item>
 
         <template v-if="showAllQuery">
           <!-- 将需要控制显示状态的查询条件添加到此范围内 -->
@@ -87,9 +82,9 @@
         <el-table-column align="left" label="是否展示" prop="is_Show" width="120">
             <template #default="scope">{{ formatBoolean(scope.row.is_Show) }}</template>
         </el-table-column>
-        <el-table-column align="left" label="公链id" prop="publicChainId" width="120">
+        <el-table-column align="left" label="资讯分类" prop="publicChainId" width="120">
             <template #default="scope">
-            {{ filterDict(scope.row.publicChainId,PublicChainOptions) }}
+            {{ filterDict(scope.row.publicChainId,咨询二级标题Options) }}
             </template>
         </el-table-column>
           <el-table-column label="封面图" prop="picture" width="200">
@@ -146,9 +141,9 @@
             <el-form-item label="是否展示:"  prop="is_Show" >
               <el-switch v-model="formData.is_Show" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
-            <el-form-item label="公链id:"  prop="publicChainId" >
-              <el-select v-model="formData.publicChainId" placeholder="请选择公链id" style="width:100%" :clearable="true" >
-                <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
+            <el-form-item label="资讯分类:"  prop="publicChainId" >
+              <el-select v-model="formData.publicChainId" placeholder="请选择资讯分类" style="width:100%" :clearable="true" >
+                <el-option v-for="(item,key) in 咨询二级标题Options" :key="key" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item label="封面图:"  prop="picture" >
@@ -180,7 +175,7 @@
                     <el-descriptions-item label="是否展示">
                         {{ detailFrom.is_Show }}
                     </el-descriptions-item>
-                    <el-descriptions-item label="公链id">
+                    <el-descriptions-item label="资讯分类">
                         {{ detailFrom.publicChainId }}
                     </el-descriptions-item>
                     <el-descriptions-item label="封面图">
@@ -234,7 +229,7 @@ const btnLoading = ref(false)
 const showAllQuery = ref(false)
 
 // 自动化生成的字典（可能为空）以及字段
-const PublicChainOptions = ref([])
+const 咨询二级标题Options = ref([])
 const formData = ref({
             title: '',
             author: '',
@@ -249,6 +244,17 @@ const formData = ref({
 
 // 验证规则
 const rule = reactive({
+               publicChainId : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
                picture : [{
                    required: true,
                    message: '',
@@ -336,7 +342,7 @@ getTableData()
 
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async () =>{
-    PublicChainOptions.value = await getDictFunc('PublicChain')
+    咨询二级标题Options.value = await getDictFunc('咨询二级标题')
 }
 
 // 获取需要的字典 可能为空 按需保留

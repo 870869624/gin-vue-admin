@@ -5,6 +5,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Information"
 	InformationReq "github.com/flipped-aurora/gin-vue-admin/server/model/Information/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -159,13 +160,26 @@ func (informationApi *InformationApi) GetInformationList(c *gin.Context) {
 // @Success 200 {object} response.Response{data=object,msg=string} "获取成功"
 // @Router /information/getInformationPublic [get]
 func (informationApi *InformationApi) GetInformationPublic(c *gin.Context) {
-	// 此接口不需要鉴权
-	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
-	informationService.GetInformationPublic()
-	response.OkWithDetailed(gin.H{
-		"info": "不需要鉴权的资讯接口信息",
+	var pageInfo request.SysDictionaryDetailSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	list, total, err := dictionaryDetailService.GetSysDictionaryDetailInfoList(pageInfo)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
 }
+
 func (informationApi *InformationApi) FindInformationMobile(c *gin.Context) {
 	ID := c.Query("ID")
 	reinformation, err := informationService.GetInformationMobile(ID)

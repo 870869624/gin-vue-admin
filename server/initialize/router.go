@@ -89,7 +89,7 @@ func Routers() *gin.Engine {
 		systemRouter.InitSysDictionaryRouter(PrivateGroup)               // 字典管理
 		systemRouter.InitAutoCodeHistoryRouter(PrivateGroup)             // 自动化代码历史
 		systemRouter.InitSysOperationRecordRouter(PrivateGroup)          // 操作记录
-		systemRouter.InitSysDictionaryDetailRouter(PrivateGroup)         // 字典详情管理
+		systemRouter.InitSysDictionaryDetailRouter(PublicGroup)          // 字典详情管理
 		systemRouter.InitAuthorityBtnRouterRouter(PrivateGroup)          // 按钮权限管理
 		systemRouter.InitSysExportTemplateRouter(PrivateGroup)           // 导出模板
 		systemRouter.InitSysParamsRouter(PrivateGroup, PublicGroup)      // 参数管理

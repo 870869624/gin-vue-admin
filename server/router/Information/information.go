@@ -22,15 +22,12 @@ func (s *InformationRouter) InitInformationRouter(Router *gin.RouterGroup, Publi
 		informationRouterWithoutRecord.GET("findInformation", informationApi.FindInformation)       // 根据ID获取资讯
 		informationRouterWithoutRecord.GET("getInformationList", informationApi.GetInformationList) // 获取资讯列表
 	}
+	informationRouterWithoutAuth.GET("getInformationPublic", informationApi.GetInformationPublic) // 资讯开放接口
+
+	//用户使用
+	informationMobileRouter := PublicRouter.Group("infoMobile")
 	{
-		informationRouterWithoutAuth.GET("getInformationPublic", informationApi.GetInformationPublic) // 资讯开放接口
-
-		//用户使用
-		informationMobileRouter := PublicRouter.Group("infoMobile")
-		{
-			informationMobileRouter.GET("getInformationList", informationApi.GetInformationListMobile)
-			informationMobileRouter.GET("findInformation", informationApi.FindInformationMobile) // 根据ID获取资讯
-		}
-
+		informationMobileRouter.GET("getInformationList", informationApi.GetInformationListMobile)
+		informationMobileRouter.GET("findInformation", informationApi.FindInformationMobile) // 根据ID获取资讯
 	}
 }

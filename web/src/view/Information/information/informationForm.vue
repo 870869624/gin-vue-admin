@@ -15,9 +15,9 @@
         <el-form-item label="是否展示:" prop="is_Show">
           <el-switch v-model="formData.is_Show" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
-        <el-form-item label="公链id:" prop="publicChainId">
-           <el-select v-model="formData.publicChainId" placeholder="请选择公链id" style="width:100%" :clearable="true" >
-              <el-option v-for="(item,key) in PublicChainOptions" :key="key" :label="item.label" :value="item.value" />
+        <el-form-item label="资讯分类:" prop="publicChainId">
+           <el-select v-model="formData.publicChainId" placeholder="请选择资讯分类" style="width:100%" :clearable="true" >
+              <el-option v-for="(item,key) in 咨询二级标题Options" :key="key" :label="item.label" :value="item.value" />
            </el-select>
        </el-form-item>
         <el-form-item label="封面图:" prop="picture">
@@ -64,7 +64,7 @@ const router = useRouter()
 const btnLoading = ref(false)
 
 const type = ref('')
-const PublicChainOptions = ref([])
+const 咨询二级标题Options = ref([])
 const formData = ref({
             title: '',
             author: '',
@@ -76,6 +76,11 @@ const formData = ref({
         })
 // 验证规则
 const rule = reactive({
+               publicChainId : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
                picture : [{
                    required: true,
                    message: '',
@@ -102,7 +107,7 @@ const init = async () => {
     } else {
       type.value = 'create'
     }
-    PublicChainOptions.value = await getDictFunc('PublicChain')
+    咨询二级标题Options.value = await getDictFunc('咨询二级标题')
 }
 
 init()

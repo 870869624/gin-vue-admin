@@ -1,9 +1,12 @@
 package Information
 
 import (
+	"strconv"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/Information"
 	InformationReq "github.com/flipped-aurora/gin-vue-admin/server/model/Information/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 )
 
 type InformationService struct{}
@@ -11,6 +14,14 @@ type InformationService struct{}
 // CreateInformation 创建资讯记录
 // Author [yourname](https://github.com/yourname)
 func (informationService *InformationService) CreateInformation(information *Information.Information) (err error) {
+	dic := system.SysDictionaryDetail{}
+	err = global.GVA_DB.Where("value = ?", information.PublicChainId).Find(&dic).Error
+	if err != nil {
+		return err
+	}
+
+	id := strconv.Itoa(int(dic.ID))
+	*information.PublicChainId = id
 	err = global.GVA_DB.Create(information).Error
 	return err
 }
@@ -32,6 +43,14 @@ func (informationService *InformationService) DeleteInformationByIds(IDs []strin
 // UpdateInformation 更新资讯记录
 // Author [yourname](https://github.com/yourname)
 func (informationService *InformationService) UpdateInformation(information Information.Information) (err error) {
+	dic := system.SysDictionaryDetail{}
+	err = global.GVA_DB.Where("value = ?", information.PublicChainId).Find(&dic).Error
+	if err != nil {
+		return err
+	}
+
+	id := strconv.Itoa(int(dic.ID))
+	*information.PublicChainId = id
 	err = global.GVA_DB.Model(&Information.Information{}).Where("id = ?", information.ID).Updates(&information).Error
 	return err
 }
@@ -64,9 +83,6 @@ func (informationService *InformationService) GetInformationInfoList(info Inform
 	if info.Is_Show != nil {
 		db = db.Where("is__show = ?", *info.Is_Show)
 	}
-	if info.PublicChainId != nil && *info.PublicChainId != "" {
-		db = db.Where("public_chain_id = ?", *info.PublicChainId)
-	}
 	err = db.Count(&total).Error
 	if err != nil {
 		return
@@ -85,7 +101,7 @@ func (informationService *InformationService) GetInformationPublic() {
 }
 
 func (informationService *InformationService) GetInformationMobile(ID string) (information Information.InformationOutput, err error) {
-	err = global.GVA_DB.Model(&Information.Information{}).Where("id = ?", ID).First(&information).Error
+	err = global.GVA_DB.Model(&Information.Information{}).Where("public_chain_id = ?", ID).First(&information).Error
 	return
 }
 
